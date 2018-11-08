@@ -76,7 +76,7 @@
 
   <script src="../../../layui/layui.js"></script>
   <script>
-  	layui.config({
+	layui.config({
   	  	base: '../../../' //静态资源所在路径
 	}).extend({
     	index: 'lib/index' //主入口模块
@@ -99,6 +99,8 @@
 	            layer.close(this.layerIndex);
 	        }
 	    });
+	    
+	    var selectPeopleNo;
 
 	    $(document).on('click','#btn-call-out',function(){
 	    	if($(this).hasClass("layui-btn-disabled")){
@@ -115,7 +117,7 @@
     			 type: 'POST'
     			,contentType: 'application/json;charset=utf-8'
     			,url:  layui.setter.serverURL +　'/calloutBatch/call'
-    			,data: JSON.stringify({"sceneId":sceneId,phone:telePhone,"updateBy":updateBy})
+    			,data: JSON.stringify({"sceneId":sceneId,phone:telePhone,"updateBy":updateBy,peopleNo:selectPeopleNo})
     			,dataType : "json"
     			,success: function(result) {
     				if ('0' == result.code) {
@@ -168,14 +170,15 @@
 	    });
 
 	    table.on('rowDouble(people)', function(obj){
-	    	var telePhone = obj.data.telePhone;
+	    	var telePhone  = obj.data.telePhone;
 	    	var peopleName = obj.data.peopleName;
+	    	var peopleNo   = obj.data.peopleNo;
 	    	if (telePhone == null || telePhone == ''){
 	    		layer.msg(peopleName + '电话为空,不能选择!');
 	    		return ;
 	    	}
 	    	$("#select-scences-people").val(telePhone);
-
+	    	selectPeopleNo = peopleNo;
 	    	enableCallOut();
 		});
 
