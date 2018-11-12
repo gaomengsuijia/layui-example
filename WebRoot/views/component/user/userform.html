@@ -58,7 +58,7 @@
 
     <div class="layui-form-item" lay-filter="sex">
         <label class="layui-form-label">选择性别</label>`
-        <div class="layui-input-block">
+        <div class="layui-input-inline">
             <input type="radio" name="sex" value="男" title="男" checked>
             <input type="radio" name="sex" value="女" title="女">
         </div>
@@ -78,9 +78,21 @@
         var $ = layui.$
             ,form = layui.form;
 
+        //去除空格
+        function Trim(str,is_global="g")
+        {
+            var result;
+            result = str.replace(/(^\s+)|(\s+$)/g,"");
+            if(is_global.toLowerCase()=="g")
+            {
+                result = result.replace(/\s/g,"");
+            }
+            return result;
+        }
+
         //搜索工号
         $("#peopleserchebtn").on('click',function () {
-            var peopleNovalue = $("#username").val();
+            var peopleNovalue = Trim($("#username").val());
             if (peopleNovalue == '' || peopleNovalue==undefined){
                 layer.msg("请输入工号");
             }else {

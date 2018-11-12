@@ -29,35 +29,20 @@
           </div>
 
           <div class="layui-inline">
-            <label class="layui-form-label">ID</label>
+            <label class="layui-form-label">账号</label>
             <div class="layui-input-block">
-              <input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
+              <input type="text" name="username" placeholder="请输入账号" autocomplete="off" class="layui-input">
             </div>
           </div>
           <div class="layui-inline">
-            <label class="layui-form-label">用户名</label>
+            <label class="layui-form-label">姓名</label>
             <div class="layui-input-block">
-              <input type="text" name="username" placeholder="请输入" autocomplete="off" class="layui-input">
+              <input type="text" name="name" placeholder="请输入姓名" autocomplete="off" class="layui-input">
             </div>
           </div>
+
           <div class="layui-inline">
-            <label class="layui-form-label">邮箱</label>
-            <div class="layui-input-block">
-              <input type="text" name="email" placeholder="请输入" autocomplete="off" class="layui-input">
-            </div>
-          </div>
-          <div class="layui-inline">
-            <label class="layui-form-label">性别</label>
-            <div class="layui-input-block">
-              <select name="sex">
-                <option value="0">不限</option>
-                <option value="1">男</option>
-                <option value="2">女</option>
-              </select>
-            </div>
-          </div>
-          <div class="layui-inline">
-            <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search">
+            <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search" style="background-color: #4D317C">
               <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
             </button>
           </div>
@@ -66,8 +51,8 @@
 
       <div class="layui-card-body">
         <div style="padding-bottom: 10px;">
-          <button class="layui-btn layuiadmin-btn-useradmin" data-type="batchdel">删除</button>
-          <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">添加</button>
+          <!--<button class="layui-btn layuiadmin-btn-useradmin" data-type="batchdel">删除</button>-->
+          <button class="layui-btn layuiadmin-btn-useradmin" style="background-color: #4D317C" data-type="add">添加</button>
         </div>
 
         <table id="table-user-list" lay-filter="table-user-list"></table>
@@ -98,18 +83,33 @@ layui.config({
     laydate.render({
         elem: '#entstarttime', //指定元素
         type:'datetime',
-        range:true
+        range:'~',
+        done:function (value,date,endDate) {
+            //完成回调
+         }
     });
 
 
     //监听搜索
     form.on('submit(LAY-user-front-search)', function(data){
-      var field = data.field;
+      var field = {};
+      //分割时间段
+      if (data.field.entstarttime){
+          var rangetime = data.field.entstarttime.split('~');
+          field.startTime = rangetime[0];
+          field.endTime = rangetime[1];
+      }else {
+          field.startTime = '';
+          field.endTime = '';
+      }
+      field.name = data.field.name;
+      field.username = data.field.username;
 
       //执行重载
       table.reload('table-user-list', {
         where: field
       });
+
     });
 
     table.render({
@@ -118,8 +118,8 @@ layui.config({
 	      ,contentType: 'application/json;charset=utf-8'
 		  ,url:  layui.setter.serverURL +　'/userInfo/selectList'
         ,request: {
-            pageName: 'page' //页码的参数名称，默认：page
-            ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            pageName: 'page' //页码的参数名称
+            ,limitName: 'pageSize' //每页数据量的参数名称
         }
  		  ,method: 'post'
  		  ,parseData: function(response){
@@ -133,14 +133,14 @@ layui.config({
  		  }
 	      ,cellMinWidth: 80
 	      ,cols: [[
-            {type:'checkbox'}
-            ,{field:'id', title: '序号', align: 'center'}
+            //{type:'checkbox'}
+             {field:'id', title: '序号', align: 'center',width: 60}
             ,{field:'name', title: '姓名', align: 'center'}
 	         ,{field:'username',   title: '账号', align: 'center'}
 	        ,{field:'dept',   title: '使用人部门', align: 'center'}
             ,{field:'createdBy',   title: '创建人', align: 'center'}
             ,{field:'creationDate',   title: '录入时间', align: 'center'}
-            ,{fixed: 'right', width:150, align:'center', toolbar: '#table-useradmin-webuser'}
+            ,{fixed: 'right', width:150, align:'center', toolbar: '#table-useradmin-webuser',title:"操作"}
 
         ]]
 	    ,text: {
@@ -150,16 +150,6 @@ layui.config({
             elem:'table-user-list'
             ,groups:5
             ,limit:5
-            ,jump: function(obj, first){
-                //obj包含了当前分页的所有参数，比如：
-                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
-                console.log(obj.limit); //得到每页显示的条数
-
-                //首次不执行
-                if(!first){
-                    //do something
-                }
-            }
         }
 	      ,height: 315
 	});
