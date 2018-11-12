@@ -8,9 +8,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <link rel="stylesheet" href="/layui/css/layui.css" media="all">
   <link rel="stylesheet" href="/style/admin.css" media="all">
+  <link rel="icon" href="/images/favicon.ico" />
 </head>
 <body class="layui-layout-body">
-  
+
   <div id="LAY_app">
     <div class="layui-layout layui-layout-admin">
       <div class="layui-header">
@@ -32,27 +33,27 @@
             <a href="javascript:;">
               <cite id="cite_login_name"></cite>
             </a>
-            
+
             <dl class="layui-nav-child">
-              <!-- 
+              <!--
               <dd><a lay-href="set/user/info.html">基本资料</a></dd>
               <dd><a lay-href="set/user/password.html">修改密码</a></dd>
               <hr>
                -->
               <dd id="btn-logout" style="text-align: center;"><a>退出</a></dd>
             </dl>
-         
+
           </li>
         </ul>
       </div>
-      
+
       <!-- 侧边菜单 -->
       <div class="layui-side layui-side-menu">
         <div class="layui-side-scroll">
           <div class="layui-logo" lay-href="/views/component/scenes.html">
             <span>智能语音外呼管理系统</span>
           </div>
-          
+
           <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
             <li data-name="home" class="layui-nav-item layui-nav-itemed">
                <a href="javascript:;" lay-href="/views/component/scenes.html" lay-tips="主页" lay-direction="2">
@@ -60,7 +61,7 @@
                 <cite>主页</cite>
               </a>
             </li>
-            
+
             <li data-name="component" class="layui-nav-item">
               <a href="javascript:;" lay-tips="外呼场景" lay-direction="2">
                 <i class="layui-icon layui-icon-component"></i>
@@ -76,23 +77,23 @@
                 <dd data-name="scenes-cost">
                  	 <a lay-href="/views/component/scenes/scenes-cost.html">费用问题</a>
                 </dd>
-                 <dd data-name="scenes-new-service"> 
-                 	 <a lay-href="/views/component/scenes/scenes-new-service.html">智能客服新客户</a>  
+                 <dd data-name="scenes-new-service">
+                 	 <a lay-href="/views/component/scenes/scenes-new-service.html">智能客服新客户</a>
                 </dd>
-                <dd data-name="scenes-car"> 
-                  	<a lay-href="/views/component/scenes/scenes-car.html">专车提前派送</a>  
+                <dd data-name="scenes-car">
+                  	<a lay-href="/views/component/scenes/scenes-car.html">专车提前派送</a>
                 </dd>
-                <!-- 
-                <dd data-name="scenes-pdd"> 
-                 	 <a lay-href="component/scenes/scenes-pdd.html">拼多多新客户</a>  
+                <!--
+                <dd data-name="scenes-pdd">
+                 	 <a lay-href="component/scenes/scenes-pdd.html">拼多多新客户</a>
                 </dd>
                  -->
-                <dd data-name="scenes-work.html"> 
-                  	<a lay-href="/views/component/scenes/scenes-work.html">工单超时催单</a>  
+                <dd data-name="scenes-work.html">
+                  	<a lay-href="/views/component/scenes/scenes-work.html">工单超时催单</a>
                 </dd>
               </dl>
             </li>
-             
+
             <li data-name="user" class="layui-nav-item">
               <a href="javascript:;" lay-tips="用户管理" lay-direction="2">
                 <i class="layui-icon layui-icon-user"></i>
@@ -143,15 +144,15 @@
           </ul>
         </div>
       </div>
-      
-      
+
+
       <!-- 主体内容 -->
       <div class="layui-body" id="LAY_app_body">
         <div class="layadmin-tabsbody-item layui-show">
           <iframe src="/views/component/scenes.html" frameborder="0" class="layadmin-iframe"></iframe>
         </div>
       </div>
-      
+
       <!-- 辅助元素，一般用于移动设备下遮罩 -->
       <div class="layadmin-body-shade" layadmin-event="shade"></div>
     </div>
@@ -166,14 +167,14 @@
 	}).use('index', function() {
 	    var $   = layui.$
 	    ,setter = layui.setter;
-	    
+
 	    // 验证是否登录
 	    if (layui.data(layui.setter.tableName).user == null){
-	    	location.href = '/views/login.html'; 
+	    	location.href = '/views/login.html';
 	    } else {
 	    	$("#cite_login_name").html(layui.data(layui.setter.tableName).user.username);
 	    }
-	    
+
 	    // 全局ajax
 	    $.ajaxSetup({
 	        layerIndex:-1,
@@ -184,10 +185,10 @@
 	            layer.close(this.layerIndex);
 	        }
 	    });
-	    
+
 	    $(document).on('click','#btn-logout',function(){
 	    	layui.data(setter.tableName,null);
-	    	location.href = '/views/login.html'; 
+	    	location.href = '/views/login.html';
 	    });
 	});
 </script>
