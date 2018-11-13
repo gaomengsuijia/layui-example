@@ -6,7 +6,7 @@ layui.define(['laytpl', 'layer', 'element', 'util'], function(exports){
     ,entry: 'index' //默认视图文件名
     ,engine: '.html' //视图文件后缀名
     ,pageTabs: true //是否开启页面选项卡功能。iframe版推荐开启
-    ,serverURL : "http://10.125.20.32:8083"
+    ,serverURL : "http://10.125.20.32:8084/servlet"
     ,name: 'callout'
     ,tableName: 'callout' //本地存储表名
     ,MOD_NAME: 'admin' //模块事件名

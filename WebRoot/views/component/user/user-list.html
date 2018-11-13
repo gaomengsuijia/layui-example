@@ -15,7 +15,6 @@
   <link rel="stylesheet" href="/style/index.css" media="all">
 </head>
 <body>
-
   <div class="layui-fluid userseacher">
     <div class="layui-card">
       <div class="layui-form layui-card-header layuiadmin-card-header-auto">
@@ -42,7 +41,7 @@
           </div>
 
           <div class="layui-inline">
-            <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search" style="background-color: #4D317C">
+            <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search" style="background-color: #4D317C; margin-left: 5px;">
               <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
             </button>
           </div>
@@ -74,18 +73,18 @@ layui.config({
   }).extend({
      index: 'lib/index' //主入口模块
   }).use(['index', 'table','laydate'], function(){
-    var $  = layui.$
-    ,form  = layui.form
-    ,table = layui.table
+    var $    = layui.$
+    ,form    = layui.form
+    ,table   = layui.table
     ,laydate = layui.laydate;
 
     //执行一个laydate实例
     laydate.render({
-        elem: '#entstarttime', //指定元素
+        elem: '#entstarttime',
         type:'datetime',
         range:'~',
         done:function (value,date,endDate) {
-            //完成回调
+           
          }
     });
 
@@ -97,10 +96,10 @@ layui.config({
       if (data.field.entstarttime){
           var rangetime = data.field.entstarttime.split('~');
           field.startTime = rangetime[0];
-          field.endTime = rangetime[1];
+          field.endTime   = rangetime[1];
       }else {
           field.startTime = '';
-          field.endTime = '';
+          field.endTime   = '';
       }
       field.name = data.field.name;
       field.username = data.field.username;
@@ -121,48 +120,46 @@ layui.config({
 	      ,contentType: 'application/json;charset=utf-8'
 		  ,url:  layui.setter.serverURL +　'/userInfo/selectList'
         ,request: {
-            pageName: 'page' //页码的参数名称
+            pageName  : 'page' //页码的参数名称
             ,limitName: 'pageSize' //每页数据量的参数名称
         }
- 		  ,method: 'post'
- 		  ,parseData: function(response){
+ 		,method: 'post'
+ 		,parseData: function(response){
  		     	return {
- 		      		 "code": response.code
- 		      		 , "msg": response.msg
- 		      		 //,"count": response.data != null ? response.data.list.length : 0
-                    ,"count":response.data.rowTotal
- 		      		 ,"data": response.data.rows
+ 		      		 "code"  : response.code
+ 		      		 ,"msg"  : response.msg
+                     ,"count": response.data.rowTotal
+ 		      		 ,"data" : response.data.rows
  		     };
- 		  }
-	      ,cellMinWidth: 80
-	      ,cols: [[
-            //{type:'checkbox'}
+ 		}
+	    ,cellMinWidth: 80
+	    ,cols: [[
              {field:'id', title: '序号', align: 'center',width: 60}
             ,{field:'name', title: '姓名', align: 'center'}
-	         ,{field:'username',   title: '账号', align: 'center'}
+	        ,{field:'username',   title: '账号', align: 'center'}
 	        ,{field:'dept',   title: '使用人部门', align: 'center'}
             ,{field:'createdBy',   title: '创建人', align: 'center'}
             ,{field:'creationDate',   title: '录入时间', align: 'center'}
             ,{fixed: 'right', width:150, align:'center', toolbar: '#table-useradmin-webuser',title:"操作"}
 
-        ]]
-	    ,text: {
+       ]]
+	   ,text: {
 	       none: '暂无相关数据'
-	     }
-	      ,page: {
-            elem:'table-user-list'
-            ,groups:5
-            ,limit:10
-        }
+	   }
+	  ,page: {
+          elem  : 'table-user-list'
+         ,groups: 5
+         ,limit : 10
+         ,theme: '#4D317C' 
+       }
 	});
 
 
     //监听工具条
     table.on('tool(table-user-list)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
-        var data = obj.data; //获得当前行数据
+        var data     = obj.data;  //获得当前行数据
         var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-        var tr = obj.tr; //获得当前行 tr 的DOM对象
-
+        var tr       = obj.tr;    //获得当前行 tr 的DOM对象
         if(layEvent === 'detail'){ //查看
             //do somehing
         } else if(layEvent === 'del'){
@@ -171,7 +168,6 @@ layui.config({
             layer.confirm(tit, function(index){
                 obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                 layer.close(index);
-                //向服务端发送删除指令
                 $.ajax({
                     type: 'POST',
                     contentType: 'application/json;charset=utf-8',
@@ -192,11 +188,10 @@ layui.config({
 
             });
         } else if(layEvent === 'edit'){ //编辑
-            //do something
             layer.open({
                 type: 2
                 ,title: '修改账号资料'
-                ,content: 'updateuserform.html'
+                ,content: 'user-update.html'
                 ,success:function (layero, index) {
                     //初始化值
                     var now_iframe = layero.find('iframe').contents();
@@ -213,19 +208,16 @@ layui.config({
                     })
                 }
                 ,maxmin: true
-                ,area: ['500px', '550px']
+                ,area: ['500px', '500px']
                 ,btn: ['确定修改', '取消']
                 ,yes: function(index, layero){
                     var iframeWindow = window['layui-layer-iframe'+ index]
                         ,submitID = 'update-LAY-user-front-submit'
-                        ,submit = layero.find('iframe').contents().find('#'+ submitID);
+                        ,submit   = layero.find('iframe').contents().find('#'+ submitID);
                     //监听提交
                     iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
                         var field = data.field; //获取提交的字段
-                        //提交 Ajax 成功后，静态更新表格中的数据
-                        //获取登录的账号名称
                         field.updatedBy = layui.data(layui.setter.tableName).user.username;
-                        //提交员工信息
                         $.ajax({
                             type: 'POST',
                             contentType: 'application/json;charset=utf-8',
@@ -246,18 +238,15 @@ layui.config({
 
                         //同步更新缓存对应的值
                         obj.update({
-                            name: field.name
-                            ,dept: field.dept
-                            ,mobile:field.mobile
-                            ,email:field.email
-                            ,sex:field.sex
+                              name  : field.name
+                             ,dept  : field.dept
+                            ,mobile : field.mobile
+                            ,email  : field.email
+                            ,sex    : field.sex
                         });
                         layer.close(index); //关闭弹层
                     });
-
                     submit.trigger('click');
-
-
                 }
             });
 
@@ -288,56 +277,60 @@ layui.config({
       }
       ,add: function(){
         layer.open({
-          type: 2
+           type: 2
           ,title: '新增账号'
-          ,content: 'userform.html'
+          ,content: 'user-add.html'
           ,maxmin: true
           ,area: ['500px', '550px']
           ,btn: ['保存', '取消']
           ,yes: function(index, layero){
             var iframeWindow = window['layui-layer-iframe'+ index]
             ,submitID = 'LAY-user-front-submit'
-            ,submit = layero.find('iframe').contents().find('#'+ submitID);
+            ,submit   = layero.find('iframe').contents().find('#'+ submitID);
 
             //监听提交
             iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
               var field = data.field; //获取提交的字段
-              //提交 Ajax 成功后，静态更新表格中的数据
-                //获取登录的账号名称
-                field.createdBy = layui.data(layui.setter.tableName).user.username;
-
-              //提交员工信息
-                  $.ajax({
-                      type: 'POST',
-                      contentType: 'application/json;charset=utf-8',
-                      url:  layui.setter.serverURL +　'/userInfo/add',
-                      data: JSON.stringify(field),
-                      dataType : "json",
-                      success: function(result) {
-                          if ('0' == result.code) {
-                              layer.msg("新增成功")
-                              layer.close(index); //关闭弹层
-                              table.reload('table-user-list'); //数据刷新
-                          } else {
-                              layer.msg(result.msg);
-                          }
-                      },
-                      error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
-                          layer.msg("请求异常");
+              var password = field.password;
+              var confirmPassword = field.confirmPassword;
+              if( password.length < 6){
+                  layer.msg("密码长度不能小于6位");
+                  return ;
+              }
+              if( password != confirmPassword){
+            	  layer.msg("两次输入密码不一致");
+                  return ;
+              }
+              field.createdBy = layui.data(layui.setter.tableName).user.username;
+              $.ajax({
+                  type: 'POST',
+                  contentType: 'application/json;charset=utf-8',
+                  url:  layui.setter.serverURL +　'/userInfo/add',
+                  data: JSON.stringify(field),
+                  dataType : "json",
+                  success: function(result) {
+                      if ('0' == result.code) {
+                          layer.msg("新增成功")
+                          layer.close(index); //关闭弹层
+                          table.reload('table-user-list'); //数据刷新
+                      } else {
+                          layer.msg(result.msg);
                       }
-                  });
+                  },
+                  error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
+                      layer.msg("请求异常");
+                  }
+              });
 
             });
 
             submit.trigger('click');
-
 
             }
         });
 
         }
     };
-
 
     $('.layui-btn.layuiadmin-btn-useradmin').on('click', function(){
       var type = $(this).data('type');

@@ -4,8 +4,18 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	id="WebApp_ID" version="2.5">
 	<display-name>callcenter-out-web</display-name>
-	
 	<welcome-file-list>
 		<welcome-file>views/login.html</welcome-file>
 	</welcome-file-list>
+	
+	<servlet>
+		<description></description>
+		<display-name>FilterServlet</display-name>
+		<servlet-name>FilterServlet</servlet-name>
+		<servlet-class>com.kyexpress.servlert.FilterServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FilterServlet</servlet-name>
+		<url-pattern>/servlet/*</url-pattern>
+	</servlet-mapping>
 </web-app>
