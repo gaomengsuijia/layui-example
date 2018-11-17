@@ -72,8 +72,9 @@
         </div>
 
         <div class="layui-card-body">
-
-            <table id="table-user-list" lay-filter="table-user-list"></table>
+            <div style="overflow-x: scroll;">
+                <table id="table-user-list" lay-filter="table-user-list"></table>
+            </div>
 
             <script type="text/html" id="imgTpl">
                 <img style="display: inline-block; width: 50%; height: 100%;" src= {{ d.avatar }}>
@@ -139,12 +140,12 @@
             type:'numbers'
             ,elem: '#table-user-list'
             ,contentType: 'application/json;charset=utf-8'
-            ,url:  layui.setter.serverURL +　'/userInfo/selectList'
+            ,url:  layui.setter.serverURL +　'/fds'
             ,request: {
                 pageName  : 'page' //页码的参数名称
                 ,limitName: 'pageSize' //每页数据量的参数名称
-            },
-            width:2000
+            }
+            // ,width:2500
             ,loading:true
             ,method: 'post'
             ,parseData: function(response){
@@ -155,16 +156,18 @@
                     ,"data" : response.data.rows
                 };
             }
-            // ,cellMinWidth: 80
+            ,cellMinWidth: 80
             ,cols: [[
-                {field:'id', title: '时间(按天)', align: 'center'}
-                ,{field:'name', title: '外呼场景', align: 'center'}
-                ,{field:'username',   title: '被叫姓名', align: 'center'}
-                ,{field:'dept',   title: '被叫号码', align: 'center'}
-                ,{field:'createdBy',   title: '呼叫总次数', align: 'center'}
-                ,{field:'creationDate',   title: '所属部门', align: 'center'}
-                ,{title: '所属部门', align: 'center',colspan:12}
-                ,{field:'creationDate',   title: '接听', align: 'center'}
+                {field:'id', title: '时间(按天)', align: 'center',rowspan: 2}
+                ,{field:'name', title: '外呼场景', align: 'center',rowspan: 2}
+                ,{field:'username',   title: '被叫姓名', align: 'center',rowspan: 2}
+                ,{field:'dept',   title: '被叫号码', align: 'center',rowspan: 2}
+                ,{field:'createdBy',   title: '呼叫总次数', align: 'center',rowspan: 2}
+                ,{field:'creationDate',   title: '所属部门', align: 'center',rowspan: 2}
+                ,{title: '接听状态/占比',align: 'center',colspan:12}
+
+            ],[
+                {field:'creationDate',   title: '接听', align: 'center'}
                 ,{field:'creationDate',   title: '状态占比', align: 'center'}
                 ,{field:'creationDate',   title: '挂断', align: 'center'}
                 ,{field:'creationDate',   title: '状态占比', align: 'center'}
@@ -176,7 +179,6 @@
                 ,{field:'creationDate',   title: '状态占比', align: 'center'}
                 ,{field:'creationDate',   title: '其他', align: 'center'}
                 ,{field:'creationDate',   title: '状态占比', align: 'center'}
-
             ]]
             ,text: {
                 none: '暂无相关数据'
