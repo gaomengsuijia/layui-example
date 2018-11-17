@@ -5,3 +5,46 @@
 .userseacher .layui-inline{
     margin-right: 0px;
 }
+
+.reportsearch .layui-card .layui-form-item{
+    text-align: center;
+}
+.reportsearch .layui-card .layui-form-item .layui-inline .layui-input-block{
+    margin-left: 0px;
+}
+.reportsearch .layui-card .layui-form-item .layui-inline .layui-input-block{
+    width: 200px;
+}
+
+.reports-detail .layui-card .layui-input-inline{
+    width: 120px;
+}
+
+.reportsearch .layui-card-body .choosedate{
+    margin-bottom: 5px;
+    border: none;
+}
+.reportsearch .layui-tab-card>.layui-tab-title .layui-this{
+    background: #999999;
+}
+.reportsearch .layui-tab-card>.layui-tab-title{
+    background: none;
+}
+
+.reportsearch .layui-card .layui-form-item .layui-inline .layui-input-block{
+    width: 300px;
+}
+.reports-detail .layui-form-item .layui-inline{
+    margin-right: 0px;
+}
+
+.layui-table-cell {
+    height: auto;
+    line-height: 28px;
+    padding: 0 15px;
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    box-sizing: border-box;
+}

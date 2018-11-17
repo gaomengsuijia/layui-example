@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户管理</title>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/style/admin.css" media="all">
+    <link rel="stylesheet" href="/style/index.css" media="all">
+</head>
+<body>
+<div class="layui-fluid reports-detail">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <button class="layui-btn layuiadmin-btn-exportexcel" style="background-color: #4D317C" data-type="export">导出报表</button>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">姓名查询</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="peopleName" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">号码查询</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" placeholder="请输入号码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: auto;">接听状态</label>
+                    <div class="layui-input-inline">
+                        <select name="answerStatus" id="answerStatus">
+                            <option value="">全部</option>
+                            <option value="1">已接听</option>
+                            <option value="0">未接听</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: auto;">外呼场景</label>
+                    <div class="layui-input-inline">
+                        <select name="sceneId" id="sceneId" lay-filter="sceneId" >
+                            <option value="">全部</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: auto;">时间范围</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="callStartTime" class="layui-input" id="callStartTime" READONLY>
+                    </div>
+                    <div class="layui-input-inline" style="width: 10px">
+                        <span>至</span>
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" name="callEndTime" class="layui-input" id="callEndTime" READONLY>
+                    </div>
+
+                </div>
+
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search" style="background-color: #4D317C; margin-left: 5px;">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+
+            <table id="table-reportsdetail-list" lay-filter="table-reportsdetail-list"></table>
+
+            <script type="text/html" id="imgTpl">
+                <img style="display: inline-block; width: 50%; height: 100%;" src= {{ d.avatar }}>
+            </script>
+            <script type="text/html" id="table-useradmin-webuser">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>明细报表</a>
+            </script>
+        </div>
+    </div>
+</div>
+
+<script src="/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'table','laydate'], function(){
+        var $    = layui.$
+            ,form    = layui.form
+            ,table   = layui.table
+            ,laydate = layui.laydate;
+
+        //执行一个laydate实例
+        var start = laydate.render({
+            elem: '#callStartTime',
+            type: 'datetime',
+            btns: ['clear', 'now','confirm'],
+            done: function(value, date){
+
+            }
+        });
+        var end = laydate.render({
+            elem: '#callEndTime',
+            type: 'datetime',
+            btns: ['clear', 'now','confirm'],
+            done: function(value, date){
+
+            }
+        });
+
+        //场景渲染
+        function getDataList(){
+            $.ajax({
+                type:'post',
+                url: layui.setter.serverURL + "/calloutScene/list",
+                success:function(response){
+                    var data=response.data;
+                    // $('#sceneId').empty();
+                    var t;
+                    if(data==null){
+                        //pass
+                    }else {
+                        $.each(data,function (index,element) {
+                            t = '<option value="' +element.id +  '">' +element.calloutType +  '</option>';
+                            $('#sceneId').append(t);
+                        })
+                    }
+
+                    form.render();
+                }
+            })
+        }
+
+        $(document).ready(function () {
+             getDataList();
+        });
+
+        var t = table.render({
+            type:'numbers'
+            ,elem: '#table-reportsdetail-list'
+            ,contentType: 'application/json;charset=utf-8'
+            ,url:  layui.setter.serverURL +　'/calloutBatchPhone/list'
+            ,request: {
+                pageName  : 'page' //页码的参数名称
+                ,limitName: 'pageSize' //每页数据量的参数名称
+            }
+            ,method: 'post'
+            ,parseData: function(response){
+                return {
+                    "code"  : response.code
+                    ,"msg"  : response.msg
+                    ,"count": response.data.rowTotal
+                    ,"data" : response.data.rows
+                };
+            }
+            ,cellMinWidth: 80
+            ,cols: [[
+                {field:'createDate', title: '时间', align: 'center'}
+                ,{field:'sceneName', title: '外呼场景', align: 'center'}
+                ,{field:'createdName',   title: '外呼坐席', align: 'center'}
+                ,{field:'peopleName',   title: '被叫姓名', align: 'center'}
+                ,{field:'phone',   title: '被叫号码', align: 'center'}
+                ,{field:'phone',   title: '所属部门', align: 'center'}
+                ,{field:'answerStatus',   title: '接听状态', align: 'center'}
+                ,{field:'failCause',   title: '未接听原因', align: 'center'}
+                ,{field:'callTime',   title: '接听时长', align: 'center'}
+
+            ]]
+            ,text: {
+                none: '暂无相关数据'
+            }
+            ,page: {
+                elem  : 'table-reportsdetail-list'
+                ,groups: 5
+                ,limit : 10
+                ,theme: '#4D317C'
+            }
+        });
+
+        //监听搜索
+        form.on('submit(LAY-user-front-search)', function(data){
+            //执行重载
+            table.reload('table-reportsdetail-list', {
+                where: data.field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+
+        });
+
+
+        //监听工具条
+        table.on('tool(table-user-list)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data     = obj.data;  //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr       = obj.tr;    //获得当前行 tr 的DOM对象
+            if(layEvent === 'detail'){ //查看
+                //do somehing
+            } else if(layEvent === 'del'){
+                //删除
+
+            } else if(layEvent === 'edit'){ //编辑
+
+
+            }
+        });
+
+
+        //事件
+        var active = {
+            batchdel: function(){
+
+            }
+            ,export: function(){
+                layer.confirm('确定导出报表？', {icon: 3, title:'提示'}, function(index){
+                    //导出报表
+                    table.exportFile(t.config.id, data); //data 为该实例中的任意数量的数据
+
+                    layer.close(index);
+                });
+
+
+            }
+        };
+
+        $('.layui-btn.layuiadmin-btn-exportexcel').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+</body>
+</html>

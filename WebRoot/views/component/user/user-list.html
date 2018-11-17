@@ -19,13 +19,19 @@
     <div class="layui-card">
       <div class="layui-form layui-card-header layuiadmin-card-header-auto">
         <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: auto;">录入时间范围</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="startTime" class="layui-input" id="startTime" READONLY>
+                </div>
+                <div class="layui-input-inline" style="width: 10px">
+                    <span>至</span>
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" name="endTime" class="layui-input" id="endTime" READONLY>
+                </div>
 
-          <div class="layui-inline">
-            <label class="layui-form-label">录入时间范围</label>
-            <div class="layui-input-block">
-              <input type="text" name="entstarttime" class="layui-input" id="entstarttime">
             </div>
-          </div>
 
           <div class="layui-inline">
             <label class="layui-form-label">账号</label>
@@ -79,28 +85,29 @@ layui.config({
     ,laydate = layui.laydate;
 
     //执行一个laydate实例
-    laydate.render({
-        elem: '#entstarttime',
-        type:'datetime',
-        range:'~',
-        done:function (value,date,endDate) {
-           
-         }
+    var start = laydate.render({
+        elem: '#startTime',
+        type: 'datetime',
+        btns: ['clear', 'now','confirm'],
+        done: function(value, date){
+
+        }
+    });
+    var end = laydate.render({
+        elem: '#endTime',
+        type: 'datetime',
+        btns: ['clear', 'now','confirm'],
+        done: function(value, date){
+
+        }
     });
 
 
     //监听搜索
     form.on('submit(LAY-user-front-search)', function(data){
       var field = {};
-      //分割时间段
-      if (data.field.entstarttime){
-          var rangetime = data.field.entstarttime.split('~');
-          field.startTime = rangetime[0];
-          field.endTime   = rangetime[1];
-      }else {
-          field.startTime = '';
-          field.endTime   = '';
-      }
+      field.startTime = data.field.startTime;
+      field.endTime = data.field.endTime;
       field.name = data.field.name;
       field.username = data.field.username;
 
@@ -150,7 +157,7 @@ layui.config({
           elem  : 'table-user-list'
          ,groups: 5
          ,limit : 10
-         ,theme: '#4D317C' 
+         ,theme: '#4D317C'
        }
 	});
 
@@ -164,8 +171,8 @@ layui.config({
             //do somehing
         } else if(layEvent === 'del'){
             //删除
-            var tit = '确定删除' + data.name + '?';
-            layer.confirm(tit, function(index){
+            var tit = '确定删除' + data.name;
+            layer.confirm(tit,{icon: 3, title:'提示'}, function(index){
                 obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                 layer.close(index);
                 $.ajax({

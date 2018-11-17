@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户管理</title>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/style/admin.css" media="all">
+    <link rel="stylesheet" href="/style/index.css" media="all">
+</head>
+<body>
+<div class="layui-fluid reports-detail">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <button class="layui-btn layuiadmin-btn-exportexcel" style="background-color: #4D317C" data-type="export">导出报表</button>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: auto;">时间维度</label>
+                        <div class="layui-input-inline">
+                            <select name="select-scences-type" id="select-scences-type1">
+                                <option value="2">按天</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: auto;">所属部门</label>
+                        <div class="layui-input-inline">
+                            <select name="select-scences-type" id="select-scences-type">
+                                <option value="2">按天</option>
+                            </select>
+                        </div>
+                    </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: auto;">外呼场景</label>
+                            <div class="layui-input-inline">
+                                <select name="select-scences-type" id="select-scences-type3">
+                                    <option value="2">转市场下单</option>
+                                </select>
+                            </div>
+                        </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: auto;">时间范围</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="startTime" class="layui-input" id="startTime" READONLY>
+                        </div>
+                        <div class="layui-input-inline" style="width: 10px">
+                            <span>至</span>
+                        </div>
+                        <div class="layui-input-inline">
+                            <input type="text" name="endTime" class="layui-input" id="endTime" READONLY>
+                        </div>
+
+                    </div>
+
+                    <div class="layui-inline">
+                        <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search" style="background-color: #4D317C; margin-left: 5px;">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                        </button>
+                    </div>
+                </div>
+        </div>
+
+        <div class="layui-card-body">
+
+            <table id="table-user-list" lay-filter="table-user-list"></table>
+
+            <script type="text/html" id="imgTpl">
+                <img style="display: inline-block; width: 50%; height: 100%;" src= {{ d.avatar }}>
+            </script>
+            <script type="text/html" id="table-useradmin-webuser">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>明细报表</a>
+            </script>
+        </div>
+    </div>
+</div>
+
+<script src="/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'table','laydate'], function(){
+        var $    = layui.$
+            ,form    = layui.form
+            ,table   = layui.table
+            ,laydate = layui.laydate;
+
+        //执行一个laydate实例
+        var start = laydate.render({
+            elem: '#startTime',
+            type: 'datetime',
+            btns: ['clear', 'now','confirm'],
+            done: function(value, date){
+
+            }
+        });
+        var end = laydate.render({
+            elem: '#endTime',
+            type: 'datetime',
+            btns: ['clear', 'now','confirm'],
+            done: function(value, date){
+
+            }
+        });
+
+
+        //监听搜索
+        form.on('submit(LAY-user-front-search)', function(data){
+            var field = {};
+            field.startTime = data.field.startTime;
+            field.endTime = data.field.endTime;
+            field.name = data.field.name;
+            field.username = data.field.username;
+
+            //执行重载
+            table.reload('table-user-list', {
+                where: field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+
+        });
+
+
+        var t = table.render({
+            type:'numbers'
+            ,elem: '#table-user-list'
+            ,contentType: 'application/json;charset=utf-8'
+            ,url:  layui.setter.serverURL +　'/userInfo/selectList'
+            ,request: {
+                pageName  : 'page' //页码的参数名称
+                ,limitName: 'pageSize' //每页数据量的参数名称
+            }
+            ,method: 'post'
+            ,parseData: function(response){
+                return {
+                    "code"  : response.code
+                    ,"msg"  : response.msg
+                    ,"count": response.data.rowTotal
+                    ,"data" : response.data.rows
+                };
+            }
+            ,cellMinWidth: 80
+            ,cols: [[
+                {field:'id', title: '序号', align: 'center',width: 60}
+                ,{field:'name', title: '姓名', align: 'center'}
+                ,{field:'username',   title: '账号', align: 'center'}
+                ,{field:'dept',   title: '使用人部门', align: 'center'}
+                ,{field:'createdBy',   title: '创建人', align: 'center'}
+                ,{field:'creationDate',   title: '录入时间', align: 'center'}
+                ,{fixed: 'right', width:150, align:'center', toolbar: '#table-useradmin-webuser',title:"操作"}
+
+            ]]
+            ,text: {
+                none: '暂无相关数据'
+            }
+            ,page: {
+                elem  : 'table-user-list'
+                ,groups: 5
+                ,limit : 10
+                ,theme: '#4D317C'
+            }
+        });
+
+
+        //监听工具条
+        table.on('tool(table-user-list)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data     = obj.data;  //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr       = obj.tr;    //获得当前行 tr 的DOM对象
+            if(layEvent === 'detail'){ //查看
+                //do somehing
+            } else if(layEvent === 'del'){
+                //删除
+                var tit = '确定删除' + data.name + '?';
+                layer.confirm(tit, function(index){
+                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                    layer.close(index);
+                    $.ajax({
+                        type: 'POST',
+                        contentType: 'application/json;charset=utf-8',
+                        url:  layui.setter.serverURL +　'/userInfo/delete',
+                        data: JSON.stringify({username:data.username}),
+                        dataType : "json",
+                        success: function(result) {
+                            if ('0' == result.code) {
+                                layer.msg("删除成功")
+                            } else {
+                                layer.msg(result.msg);
+                            }
+                        },
+                        error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
+                            layer.msg("请求异常");
+                        }
+                    });
+
+                });
+            } else if(layEvent === 'edit'){ //编辑
+                layer.open({
+                    type: 2
+                    ,title: '修改账号资料'
+                    ,content: 'user-update.html'
+                    ,success:function (layero, index) {
+                        //初始化值
+                        var now_iframe = layero.find('iframe').contents();
+                        now_iframe.find("#id").val(data.id);
+                        now_iframe.find("#username").val(data.username);
+                        now_iframe.find("#dept").val(data.dept);
+                        now_iframe.find("#name").val(data.name);
+                        now_iframe.find("#mobile").val(data.mobile);
+                        now_iframe.find("#email").val(data.email);
+                        now_iframe.find(":radio").each(function () {
+                            if (this.value == data.sex){
+                                $(this).attr("checked","checked")
+                            }
+                        })
+                    }
+                    ,maxmin: true
+                    ,area: ['500px', '500px']
+                    ,btn: ['确定修改', '取消']
+                    ,yes: function(index, layero){
+                        var iframeWindow = window['layui-layer-iframe'+ index]
+                            ,submitID = 'update-LAY-user-front-submit'
+                            ,submit   = layero.find('iframe').contents().find('#'+ submitID);
+                        //监听提交
+                        iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+                            var field = data.field; //获取提交的字段
+                            field.updatedBy = layui.data(layui.setter.tableName).user.username;
+                            $.ajax({
+                                type: 'POST',
+                                contentType: 'application/json;charset=utf-8',
+                                url:  layui.setter.serverURL +　'/userInfo/update',
+                                data: JSON.stringify(field),
+                                dataType : "json",
+                                success: function(result) {
+                                    if ('0' == result.code) {
+                                        layer.msg("修改成功")
+                                    } else {
+                                        layer.msg(result.msg);
+                                    }
+                                },
+                                error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
+                                    layer.msg("请求异常");
+                                }
+                            });
+
+                            //同步更新缓存对应的值
+                            obj.update({
+                                name  : field.name
+                                ,dept  : field.dept
+                                ,mobile : field.mobile
+                                ,email  : field.email
+                                ,sex    : field.sex
+                            });
+                            layer.close(index); //关闭弹层
+                        });
+                        submit.trigger('click');
+                    }
+                });
+
+            }
+        });
+
+
+        //事件
+        var active = {
+            batchdel: function(){
+
+            }
+            ,export: function(){
+                layer.confirm('确定导出报表？', {icon: 3, title:'提示'}, function(index){
+                    //导出报表
+                    table.exportFile(t.config.id, data); //data 为该实例中的任意数量的数据
+
+                    layer.close(index);
+                });
+
+
+            }
+        };
+
+        $('.layui-btn.layuiadmin-btn-exportexcel').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+</body>
+</html>
