@@ -73,7 +73,7 @@
 
         <div class="layui-card-body">
 
-            <table id="table-user-list" lay-filter="table-user-list"></table>
+            <table id="table-reportscollect-list" lay-filter="table-reportscollect-list"></table>
 
             <script type="text/html" id="imgTpl">
                 <img style="display: inline-block; width: 50%; height: 100%;" src= {{ d.avatar }}>
@@ -137,9 +137,9 @@
 
         var t = table.render({
             type:'numbers'
-            ,elem: '#table-user-list'
+            ,elem: '#table-reportscollect-list'
             ,contentType: 'application/json;charset=utf-8'
-            ,url:  layui.setter.serverURL +　'/userInfo/selectList'
+            ,url:  layui.setter.serverURL +　'/userInfo/selectLisfdst'
             ,request: {
                 pageName  : 'page' //页码的参数名称
                 ,limitName: 'pageSize' //每页数据量的参数名称
@@ -155,12 +155,16 @@
             }
             ,cellMinWidth: 80
             ,cols: [[
-                {field:'id', title: '序号', align: 'center',width: 60}
-                ,{field:'name', title: '姓名', align: 'center'}
-                ,{field:'username',   title: '账号', align: 'center'}
-                ,{field:'dept',   title: '使用人部门', align: 'center'}
-                ,{field:'createdBy',   title: '创建人', align: 'center'}
-                ,{field:'creationDate',   title: '录入时间', align: 'center'}
+                {field:'id', title: '时间（按天）', align: 'center'}
+                ,{field:'name', title: '外呼总量', align: 'center'}
+                ,{field:'username',   title: '所属部门', align: 'center'}
+                ,{field:'dept',   title: '外呼场景', align: 'center'}
+                ,{field:'createdBy',   title: '一次成功数', align: 'center'}
+                ,{field:'creationDate',   title: '外呼一次成功率', align: 'center'}
+                ,{field:'createdBy',   title: '二次成功数', align: 'center'}
+                ,{field:'creationDate',   title: '外呼二次成功率', align: 'center'}
+                ,{field:'createdBy',   title: '三次成功数', align: 'center'}
+                ,{field:'creationDate',   title: '三次成功率', align: 'center'}
                 ,{fixed: 'right', width:150, align:'center', toolbar: '#table-useradmin-webuser',title:"操作"}
 
             ]]
@@ -168,7 +172,7 @@
                 none: '暂无相关数据'
             }
             ,page: {
-                elem  : 'table-user-list'
+                elem  : 'table-reportscollect-list'
                 ,groups: 5
                 ,limit : 10
                 ,theme: '#4D317C'
@@ -184,93 +188,8 @@
             if(layEvent === 'detail'){ //查看
                 //do somehing
             } else if(layEvent === 'del'){
-                //删除
-                var tit = '确定删除' + data.name + '?';
-                layer.confirm(tit, function(index){
-                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                    layer.close(index);
-                    $.ajax({
-                        type: 'POST',
-                        contentType: 'application/json;charset=utf-8',
-                        url:  layui.setter.serverURL +　'/userInfo/delete',
-                        data: JSON.stringify({username:data.username}),
-                        dataType : "json",
-                        success: function(result) {
-                            if ('0' == result.code) {
-                                layer.msg("删除成功")
-                            } else {
-                                layer.msg(result.msg);
-                            }
-                        },
-                        error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
-                            layer.msg("请求异常");
-                        }
-                    });
 
-                });
-            } else if(layEvent === 'edit'){ //编辑
-                layer.open({
-                    type: 2
-                    ,title: '修改账号资料'
-                    ,content: 'user-update.html'
-                    ,success:function (layero, index) {
-                        //初始化值
-                        var now_iframe = layero.find('iframe').contents();
-                        now_iframe.find("#id").val(data.id);
-                        now_iframe.find("#username").val(data.username);
-                        now_iframe.find("#dept").val(data.dept);
-                        now_iframe.find("#name").val(data.name);
-                        now_iframe.find("#mobile").val(data.mobile);
-                        now_iframe.find("#email").val(data.email);
-                        now_iframe.find(":radio").each(function () {
-                            if (this.value == data.sex){
-                                $(this).attr("checked","checked")
-                            }
-                        })
-                    }
-                    ,maxmin: true
-                    ,area: ['500px', '500px']
-                    ,btn: ['确定修改', '取消']
-                    ,yes: function(index, layero){
-                        var iframeWindow = window['layui-layer-iframe'+ index]
-                            ,submitID = 'update-LAY-user-front-submit'
-                            ,submit   = layero.find('iframe').contents().find('#'+ submitID);
-                        //监听提交
-                        iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
-                            var field = data.field; //获取提交的字段
-                            field.updatedBy = layui.data(layui.setter.tableName).user.username;
-                            $.ajax({
-                                type: 'POST',
-                                contentType: 'application/json;charset=utf-8',
-                                url:  layui.setter.serverURL +　'/userInfo/update',
-                                data: JSON.stringify(field),
-                                dataType : "json",
-                                success: function(result) {
-                                    if ('0' == result.code) {
-                                        layer.msg("修改成功")
-                                    } else {
-                                        layer.msg(result.msg);
-                                    }
-                                },
-                                error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
-                                    layer.msg("请求异常");
-                                }
-                            });
-
-                            //同步更新缓存对应的值
-                            obj.update({
-                                name  : field.name
-                                ,dept  : field.dept
-                                ,mobile : field.mobile
-                                ,email  : field.email
-                                ,sex    : field.sex
-                            });
-                            layer.close(index); //关闭弹层
-                        });
-                        submit.trigger('click');
-                    }
-                });
-
+            } else if(layEvent === 'edit') { //编辑
             }
         });
 

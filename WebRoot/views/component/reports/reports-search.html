@@ -58,8 +58,50 @@
             ,table   = layui.table
             ,element = layui.element
             ,timeFlag = 1;
+        //table渲染
+        function tablexuanran(field){
+            table.render({
+                type:'numbers'
+                ,elem: '#table-report'
+                ,contentType: 'application/json;charset=utf-8'
+                ,url:  layui.setter.serverURL +　'/calloutBatchPhone/list'
+                ,request: {
+                    pageName  : 'page' //页码的参数名称
+                    ,limitName: 'pageSize' //每页数据量的参数名称
+                }
+                ,where:field
+                ,method: 'post'
+                ,parseData: function(response){
+                    return {
+                        "code"  : response.code
+                        ,"msg"  : response.msg
+                        ,"count": response.data.rowTotal
+                        ,"data" : response.data.rows
+                    };
+                }
+                ,cellMinWidth: 80
+                ,cols: [[
+                    {field:'createDate', title: '时间', align: 'center'}
+                    ,{field:'sceneName', title: '外呼场景', align: 'center'}
+                    ,{field:'createdName',   title: '外呼坐席', align: 'center'}
+                    ,{field:'peopleName',   title: '被叫姓名', align: 'center'}
+                    ,{field:'phone',   title: '被叫号码', align: 'center'}
+                    ,{field:'answerStatus',   title: '接听状态', align: 'center'}
+                    ,{field:'failCause',   title: '未接听原因', align: 'center'}
+                    ,{field:'callTime',   title: '接听时长', align: 'center'}
 
-
+                ]]
+                ,text: {
+                    none: '暂无相关数据'
+                }
+                ,page: {
+                    elem  : 'table-report'
+                    ,groups: 5
+                    ,limit : 10
+                    ,theme: '#4D317C'
+                }
+            });
+        }
 
         //监听tab切换
         element.on('tab(search-time)', function(data){
@@ -80,12 +122,7 @@
             var field = {};
             field.keyWord = $("#keyWord").val();
             field.timeFlag = timeFlag;
-            table.reload('table-report', {
-                where: field
-                ,page: {
-                    curr: 1 //重新从第 1 页开始
-                }
-            });
+            tablexuanran(field);
 
         });
 
@@ -94,59 +131,11 @@
             var field = {};
             field.keyWord = data.field.keyWord;
             field.timeFlag = timeFlag;
-
-            //执行重载
-            table.reload('table-report', {
-                where: field
-                ,page: {
-                    curr: 1 //重新从第 1 页开始
-                }
-            });
+            tablexuanran(field);
 
         });
 
 
-        table.render({
-            type:'numbers'
-            ,elem: '#table-report'
-            ,contentType: 'application/json;charset=utf-8'
-            ,url:  layui.setter.serverURL +　'/calloutBatchPhone/list'
-            ,request: {
-                pageName  : 'page' //页码的参数名称
-                ,limitName: 'pageSize' //每页数据量的参数名称
-            }
-            ,where:{timeFlag:timeFlag}
-            ,method: 'post'
-            ,parseData: function(response){
-                return {
-                    "code"  : response.code
-                    ,"msg"  : response.msg
-                    ,"count": response.data.rowTotal
-                    ,"data" : response.data.rows
-                };
-            }
-            ,cellMinWidth: 80
-            ,cols: [[
-                {field:'createDate', title: '时间', align: 'center'}
-                ,{field:'sceneName', title: '外呼场景', align: 'center'}
-                ,{field:'createdName',   title: '外呼坐席', align: 'center'}
-                ,{field:'peopleName',   title: '被叫姓名', align: 'center'}
-                ,{field:'phone',   title: '被叫号码', align: 'center'}
-                ,{field:'answerStatus',   title: '接听状态', align: 'center'}
-                ,{field:'failCause',   title: '未接听原因', align: 'center'}
-                ,{field:'callTime',   title: '接听时长', align: 'center'}
-
-            ]]
-            ,text: {
-                none: '暂无相关数据'
-            }
-            ,page: {
-                elem  : 'table-report'
-                ,groups: 5
-                ,limit : 10
-                ,theme: '#4D317C'
-            }
-        });
 
     });
 </script>
