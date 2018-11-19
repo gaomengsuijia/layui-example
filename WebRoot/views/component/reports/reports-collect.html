@@ -44,8 +44,8 @@
                         <div class="layui-inline">
                             <label class="layui-form-label" style="width: auto;">外呼场景</label>
                             <div class="layui-input-inline">
-                                <select name="select-scences-type" id="select-scences-type3">
-                                    <option value="2">转市场下单</option>
+                                <select name="sceneId" id="sceneId" lay-filter="sceneId" >
+                                    <option value="">全部</option>
                                 </select>
                             </div>
                         </div>
@@ -90,11 +90,13 @@
     layui.config({
         base: '/' //静态资源所在路径
     }).extend({
-        index: 'lib/index' //主入口模块
-    }).use(['index', 'table','laydate'], function(){
+        index: 'lib/index', //主入口模块
+        mypub:'public'
+    }).use(['index', 'table','laydate','mypub'], function(){
         var $    = layui.$
             ,form    = layui.form
             ,table   = layui.table
+            ,mypub = layui.mypub
             ,laydate = layui.laydate;
 
         //执行一个laydate实例
@@ -115,7 +117,9 @@
             }
         });
 
-
+        $(document).ready(function () {
+            mypub.getDataList(form);
+        });
         //监听搜索
         form.on('submit(LAY-user-front-search)', function(data){
             var field = {};

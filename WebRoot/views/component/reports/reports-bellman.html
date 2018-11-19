@@ -60,7 +60,7 @@
             field.username = data.field.username;
 
             //执行重载
-            table.reload('table-user-list', {
+            table.reload('table-bellman-list', {
                 where: field
                 ,page: {
                     curr: 1 //重新从第 1 页开始
@@ -73,7 +73,7 @@
             type:'numbers'
             ,elem: '#table-bellman-list'
             ,contentType: 'application/json;charset=utf-8'
-            ,url:  layui.setter.serverURL +　'/userInfo/selectList'
+            ,url:  layui.setter.serverURL +　'/calloutPeople/list'
             ,request: {
                 pageName  : 'page' //页码的参数名称
                 ,limitName: 'pageSize' //每页数据量的参数名称
@@ -121,17 +121,17 @@
                 //删除
                 var tit = '是否确认将【' + data.name + "】移出响铃人员组,移出后该用户将不会再收到响铃提醒。";
                 layer.confirm(tit, {icon: 3, title:'提示'},function(index){
-                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                    layer.close(index);
                     $.ajax({
                         type: 'POST',
                         contentType: 'application/json;charset=utf-8',
-                        url:  layui.setter.serverURL +　'/userInfo/delete',
+                        url:  layui.setter.serverURL +　'/calloutPeople/delete',
                         data: JSON.stringify({username:data.username}),
                         dataType : "json",
                         success: function(result) {
                             if ('0' == result.code) {
-                                layer.msg("删除成功")
+                                layer.msg("删除成功");
+                                obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                layer.close(index);
                             } else {
                                 layer.msg(result.msg);
                             }
@@ -159,7 +159,7 @@
                     ,title: '添加响铃人员'
                     ,content: 'reports-addbellman.html'
                     ,maxmin: true
-                    ,area: ['500px', '550px']
+                    ,area: ['500px', '400px']
                     ,btn: ['保存', '取消']
                     ,yes: function(index, layero){
                         var iframeWindow = window['layui-layer-iframe'+ index]
@@ -183,7 +183,7 @@
                             $.ajax({
                                 type: 'POST',
                                 contentType: 'application/json;charset=utf-8',
-                                url:  layui.setter.serverURL +　'/userInfo/add',
+                                url:  layui.setter.serverURL +　'/calloutPeople/save',
                                 data: JSON.stringify(field),
                                 dataType : "json",
                                 success: function(result) {

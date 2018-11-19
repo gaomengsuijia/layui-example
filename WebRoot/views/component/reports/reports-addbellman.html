@@ -14,16 +14,16 @@
     <div class="layui-form-item">
         <label class="layui-form-label" style="width: auto;">用户组</label>
         <div class="layui-input-inline">
-            <select name="select-scences-type" id="select-scences-type1">
-                <option value="2">按天</option>
+            <select name="select-scences-type" id="select-scences-type1" disabled="disabled">
+                <option value="" disabled="disabled">默认</option>
             </select>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label" style="width: auto;">所属部门</label>
         <div class="layui-input-inline">
-            <select name="select-scences-type" id="select-scences-type2">
-                <option value="2">按天</option>
+            <select name="select-scences-type2" id="select-scences-type2" disabled="disabled">
+                <option value="" >默认</option>
             </select>
         </div>
     </div>
@@ -31,7 +31,7 @@
         <label class="layui-form-label" style="width: auto;">选择人员</label>
         <div class="layui-input-inline">
             <select name="select-scences-type" id="select-scences-type3">
-                <option value="2">按天</option>
+
             </select>
         </div>
     </div>
@@ -60,37 +60,6 @@
             return result;
         }
 
-        //搜索工号
-        $("#peopleserchebtn").on('click',function () {
-            var peopleNovalue = trim($("#username").val());
-            if (peopleNovalue == '' || peopleNovalue==undefined){
-                layer.msg("请输入ERP账号");
-            }else {
-                $.ajax({
-                    type: 'POST'
-                    ,contentType: 'application/json;charset=utf-8'
-                    ,url:  layui.setter.serverURL +　'/deptPeople/query'
-                    ,data: JSON.stringify({peopleNo:peopleNovalue})
-                    ,dataType : "json"
-                    ,success: function(result) {
-                        if ('0' == result.code) {
-                            if (result.data == null){
-                                layer.msg("ERP账号不存在");
-                            } else {
-                                $("#dept").val(result.data.workShop);
-                                $("#name").val(result.data.peopleName);
-                                $("#mobile").val(result.data.telePhone);
-                            }
-                        }
-                        else {
-                            layer.msg(result.msg)
-                        }
-                    },error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
-                        layer.msg("请求异常");
-                    }
-                });
-            }
-        })
     })
 </script>
 </body>

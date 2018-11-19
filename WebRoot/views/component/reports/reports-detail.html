@@ -97,11 +97,13 @@
     layui.config({
         base: '/' //静态资源所在路径
     }).extend({
-        index: 'lib/index' //主入口模块
-    }).use(['index', 'table','laydate'], function(){
+        index: 'lib/index', //主入口模块
+        mypub:'public'
+    }).use(['index', 'table','laydate','mypub'], function(){
         var $    = layui.$
             ,form    = layui.form
             ,table   = layui.table
+            ,mypub = layui.mypub
             ,laydate = layui.laydate;
 
         //执行一个laydate实例
@@ -122,31 +124,9 @@
             }
         });
 
-        //场景渲染
-        function getDataList(){
-            $.ajax({
-                type:'post',
-                url: layui.setter.serverURL + "/calloutScene/list",
-                success:function(response){
-                    var data=response.data;
-                    // $('#sceneId').empty();
-                    var t;
-                    if(data==null){
-                        //pass
-                    }else {
-                        $.each(data,function (index,element) {
-                            t = '<option value="' +element.id +  '">' +element.calloutType +  '</option>';
-                            $('#sceneId').append(t);
-                        })
-                    }
-
-                    form.render();
-                }
-            })
-        }
 
         $(document).ready(function () {
-             getDataList();
+            mypub.getDataList(form);
         });
 
         var t = table.render({
@@ -174,7 +154,7 @@
                 ,{field:'createdName',   title: '外呼坐席', align: 'center'}
                 ,{field:'peopleName',   title: '被叫姓名', align: 'center'}
                 ,{field:'phone',   title: '被叫号码', align: 'center'}
-                ,{field:'phone',   title: '所属部门', align: 'center'}
+                ,{field:'department',   title: '所属部门', align: 'center'}
                 ,{field:'answerStatus',   title: '接听状态', align: 'center'}
                 ,{field:'failCause',   title: '未接听原因', align: 'center'}
                 ,{field:'callTime',   title: '接听时长', align: 'center'}

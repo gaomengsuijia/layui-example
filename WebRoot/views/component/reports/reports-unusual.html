@@ -30,8 +30,8 @@
                 <div class="layui-inline">
                     <label class="layui-form-label" style="width: auto;">外呼场景</label>
                     <div class="layui-input-inline">
-                        <select name="select-scences-type" id="select-scences-type">
-                            <option value="2">转市场下单</option>
+                        <select name="sceneId" id="sceneId" lay-filter="sceneId" >
+                            <option value="">全部</option>
                         </select>
                     </div>
                 </div>
@@ -77,11 +77,14 @@
     layui.config({
         base: '/' //静态资源所在路径
     }).extend({
-        index: 'lib/index' //主入口模块
-    }).use(['index', 'table','laydate'], function(){
+        index: 'lib/index', //主入口模块
+        mypub:'public'
+    }).use(['index', 'table','laydate','element','mypub'], function(){
         var $    = layui.$
             ,form    = layui.form
             ,table   = layui.table
+            ,element = layui.element
+            ,mypub = layui.mypub
             ,laydate = layui.laydate;
 
         //执行一个laydate实例
@@ -102,6 +105,9 @@
             }
         });
 
+        $(document).ready(function () {
+            mypub.getDataList(form);
+        });
 
         //监听搜索
         form.on('submit(LAY-user-front-search)', function(data){
@@ -149,7 +155,7 @@
             ,cellMinWidth: 80
             ,cols: [[
                 {field:'createDate', title: '时间', align: 'center'}
-                ,{field:'sceneId', title: '外呼场景', align: 'center'}
+                ,{field:'sceneName', title: '外呼场景', align: 'center'}
                 ,{field:'peopleName',   title: '被叫姓名', align: 'center'}
                 ,{field:'phone',   title: '被叫号码', align: 'center'}
                 ,{field:'createdName',   title: '上级领导', align: 'center'}
@@ -173,12 +179,59 @@
 
 
         //监听工具条
-        table.on('tool(table-user-list)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        table.on('tool(table-reportsunusual-list)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
             var data     = obj.data;  //获得当前行数据
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
             var tr       = obj.tr;    //获得当前行 tr 的DOM对象
             if(layEvent === 'handle'){ //处理
                 //do somehing
+                layer.open({
+                    type: 2
+                    ,title: '处理确认'
+                    ,content: 'reports-handleunusual.html'
+                    ,maxmin: true
+                    ,area: ['500px', '500px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        var iframeWindow = window['layui-layer-iframe'+ index]
+                            ,submitID = 'LAY-handleunusual-submit'
+                            ,submit   = layero.find('iframe').contents().find('#'+ submitID);
+                        //监听提交
+                        iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+                            var field = data.field; //获取提交的字段
+                            console.log(field);
+                            field.updatedBy = layui.data(layui.setter.tableName).user.username;
+                            $.ajax({
+                                type: 'POST',
+                                contentType: 'application/json;charset=utf-8',
+                                url:  layui.setter.serverURL +　'/userInfo/updatessssss',
+                                data: JSON.stringify(field),
+                                dataType : "json",
+                                success: function(result) {
+                                    if ('0' == result.code) {
+                                        layer.msg("修改成功")
+                                    } else {
+                                        layer.msg(result.msg);
+                                    }
+                                },
+                                error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
+                                    layer.msg("请求异常");
+                                }
+                            });
+
+                            //同步更新缓存对应的值
+                            obj.update({
+                                name  : field.name
+                                ,dept  : field.dept
+                                ,mobile : field.mobile
+                                ,email  : field.email
+                                ,sex    : field.sex
+                            });
+                            layer.close(index); //关闭弹层
+                        });
+                        submit.trigger('click');
+                    }
+                });
 
             } else if(layEvent === 'del'){
 
@@ -211,58 +264,7 @@
                 });
             }
             ,add: function(){
-                layer.open({
-                    type: 2
-                    ,title: '新增账号'
-                    ,content: 'user-add.html'
-                    ,maxmin: true
-                    ,area: ['500px', '550px']
-                    ,btn: ['保存', '取消']
-                    ,yes: function(index, layero){
-                        var iframeWindow = window['layui-layer-iframe'+ index]
-                            ,submitID = 'LAY-user-front-submit'
-                            ,submit   = layero.find('iframe').contents().find('#'+ submitID);
 
-                        //监听提交
-                        iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
-                            var field = data.field; //获取提交的字段
-                            var password = field.password;
-                            var confirmPassword = field.confirmPassword;
-                            if( password.length < 6){
-                                layer.msg("密码长度不能小于6位");
-                                return ;
-                            }
-                            if( password != confirmPassword){
-                                layer.msg("两次输入密码不一致");
-                                return ;
-                            }
-                            field.createdBy = layui.data(layui.setter.tableName).user.username;
-                            $.ajax({
-                                type: 'POST',
-                                contentType: 'application/json;charset=utf-8',
-                                url:  layui.setter.serverURL +　'/userInfo/add',
-                                data: JSON.stringify(field),
-                                dataType : "json",
-                                success: function(result) {
-                                    if ('0' == result.code) {
-                                        layer.msg("新增成功")
-                                        layer.close(index); //关闭弹层
-                                        table.reload('table-user-list'); //数据刷新
-                                    } else {
-                                        layer.msg(result.msg);
-                                    }
-                                },
-                                error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
-                                    layer.msg("请求异常");
-                                }
-                            });
-
-                        });
-
-                        submit.trigger('click');
-
-                    }
-                });
 
             }
         };

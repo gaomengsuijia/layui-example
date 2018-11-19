@@ -26,12 +26,12 @@
                         <input type="text" id="keyWord" placeholder="输入姓名或手机号码查询" name="keyWord" style="background-color: #FBFBFB" autocomplete="off" class="layui-input">
                     </div>
                 </div>
-                <button class="layui-btn" id ="btn-out" lay-submit lay-filter="LAY-report-front-search" style="background-color: #4D317C;">查询</button>
+                <button class="layui-btn" id ="btn-search" lay-submit lay-filter="LAY-report-front-search" style="background-color: #4D317C;">查询</button>
 
             </div>
         </div>
 
-        <div class="layui-card-body">
+        <div class="layui-card-body" style="display: none" id="choosedate">
             <div class="layui-tab layui-tab-card choosedate" lay-filter="search-time">
                 <ul class="layui-tab-title">
                     <li class="layui-this">今天</li>
@@ -51,12 +51,14 @@
     layui.config({
         base: '/' //静态资源所在路径
     }).extend({
-        index: 'lib/index' //主入口模块
-    }).use(['index', 'table','laydate','element'], function(){
+        index: 'lib/index', //主入口模块
+        mypub:'public'
+    }).use(['index', 'table','laydate','element','mypub'], function(){
         var $    = layui.$
             ,form    = layui.form
             ,table   = layui.table
             ,element = layui.element
+            ,mypub = layui.mypub
             ,timeFlag = 1;
         //table渲染
         function tablexuanran(field){
@@ -103,6 +105,13 @@
             });
         }
 
+        // 回车键
+        $(document).keydown(function (event) {
+            if ( 13 == event.keyCode) {
+                $("#btn-search").click();
+            }
+        });
+
         //监听tab切换
         element.on('tab(search-time)', function(data){
             //设置时间
@@ -130,7 +139,16 @@
         form.on('submit(LAY-report-front-search)', function(data){
             var field = {};
             field.keyWord = data.field.keyWord;
+            if (mypub.trim(field.keyWord) == ''){
+                return
+            }
             field.timeFlag = timeFlag;
+            //展示tab
+            var dis = $("#choosedate").css("display");
+            if (dis == "none"){
+                $("#choosedate").css("display","block");
+            }
+
             tablexuanran(field);
 
         });
