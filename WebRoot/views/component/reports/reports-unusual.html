@@ -30,7 +30,7 @@
                 <div class="layui-inline">
                     <label class="layui-form-label" style="width: auto;">外呼场景</label>
                     <div class="layui-input-inline">
-                        <select name="sceneId" id="sceneId" lay-filter="sceneId" >
+                        <select name="calloutSceneId" id="sceneId" lay-filter="sceneId" >
                             <option value="">全部</option>
                         </select>
                     </div>
@@ -39,13 +39,13 @@
                 <div class="layui-inline">
                     <label class="layui-form-label" style="width: auto;">时间范围</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="callStartTime" class="layui-input" id="callStartTime" READONLY>
+                        <input type="text" name="startTime" class="layui-input" id="callStartTime" READONLY>
                     </div>
                     <div class="layui-input-inline" style="width: 10px">
                     <span>至</span>
                     </div>
                     <div class="layui-input-inline">
-                        <input type="text" name="callEndTime" class="layui-input" id="callEndTime" READONLY>
+                        <input type="text" name="endTime" class="layui-input" id="callEndTime" READONLY>
                     </div>
 
                 </div>
@@ -73,6 +73,14 @@
     </div>
 </div>
 <script src="/layui/layui.js"></script>
+<script type="text/html" id="handlestatus">
+    {{#if (d.handleStatus == 0) { }}
+    <span>未处理</span>
+    {{# }else if(d.handleStatus == 1){ }}
+    <span>已处理</span>
+    {{# } }}
+</script>
+
 <script>
     layui.config({
         base: '/' //静态资源所在路径
@@ -111,21 +119,10 @@
 
         //监听搜索
         form.on('submit(LAY-user-front-search)', function(data){
-            var field = {};
-            //分割时间段
-            if (data.field.entstarttime){
-                var rangetime = data.field.entstarttime.split('~');
-                field.startTime = rangetime[0];
-                field.endTime   = rangetime[1];
-            }else {
-                field.startTime = '';
-                field.endTime   = '';
-            }
-            field.name = data.field.name;
-            field.username = data.field.username;
-
+            var field = data.field;
+            console.log(field);
             //执行重载
-            table.reload('table-user-list', {
+            table.reload('table-reportsunusual-list', {
                 where: field
                 ,page: {
                     curr: 1 //重新从第 1 页开始
@@ -138,11 +135,12 @@
             type:'numbers'
             ,elem: '#table-reportsunusual-list'
             ,contentType: 'application/json;charset=utf-8'
-            ,url:  layui.setter.serverURL +　'/calloutBatchPhone/list'
+            ,url:  layui.setter.serverURL +　'/calloutException/queryList'
             ,request: {
                 pageName  : 'page' //页码的参数名称
                 ,limitName: 'pageSize' //每页数据量的参数名称
             }
+            ,where:{handleStatus:0}
             ,method: 'post'
             ,parseData: function(response){
                 return {
@@ -154,15 +152,15 @@
             }
             ,cellMinWidth: 80
             ,cols: [[
-                {field:'createDate', title: '时间', align: 'center'}
-                ,{field:'sceneName', title: '外呼场景', align: 'center'}
-                ,{field:'peopleName',   title: '被叫姓名', align: 'center'}
-                ,{field:'phone',   title: '被叫号码', align: 'center'}
-                ,{field:'createdName',   title: '上级领导', align: 'center'}
-                ,{field:'createdName',   title: '上级号码', align: 'center'}
-                ,{field:'answerStatus',   title: '处理人', align: 'center'}
-                ,{field:'failCause',   title: '处理状态', align: 'center'}
-                ,{field:'callTime',   title: '处理时间', align: 'center'}
+                {field:'calloutTime', title: '时间', align: 'center'}
+                ,{field:'calloutType', title: '外呼场景', align: 'center'}
+                ,{field:'calloutName',   title: '被叫姓名', align: 'center'}
+                ,{field:'calloutPhone',   title: '被叫号码', align: 'center'}
+                ,{field:'leader',   title: '上级领导', align: 'center'}
+                ,{field:'leaderPhone',   title: '上级号码', align: 'center'}
+                ,{field:'handler',   title: '处理人', align: 'center'}
+                ,{field:'handleStatus',   title: '处理状态', align: 'center',templet:'#handlestatus'}
+                ,{field:'handleTime',   title: '处理时间', align: 'center'}
                 ,{fixed: 'right', width:150, align:'center', toolbar: '#table-useradmin-webuser',title:"操作"}
 
             ]]
@@ -197,14 +195,16 @@
                             ,submitID = 'LAY-handleunusual-submit'
                             ,submit   = layero.find('iframe').contents().find('#'+ submitID);
                         //监听提交
-                        iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
-                            var field = data.field; //获取提交的字段
+                        iframeWindow.layui.form.on('submit('+ submitID +')', function(data1){
+                            var field = data1.field; //获取提交的字段
+                            field.id = data.id;
+                            field.handler = layui.data(layui.setter.tableName).user.name;
                             console.log(field);
-                            field.updatedBy = layui.data(layui.setter.tableName).user.username;
+                            // field.updatedBy = layui.data(layui.setter.tableName).user.username;
                             $.ajax({
                                 type: 'POST',
                                 contentType: 'application/json;charset=utf-8',
-                                url:  layui.setter.serverURL +　'/userInfo/updatessssss',
+                                url:  layui.setter.serverURL +　'/calloutException/updateStatus',
                                 data: JSON.stringify(field),
                                 dataType : "json",
                                 success: function(result) {

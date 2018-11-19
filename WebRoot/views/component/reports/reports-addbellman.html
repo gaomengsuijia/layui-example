@@ -5,62 +5,109 @@
     <title>用户管理-添加用户</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="/layui/css/layui.css" media="all">
 </head>
 <body>
-<div class="layui-form" lay-filter="layuiadmin-form-useradmin" id="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" id="layuiadmin-form-useradmin"
+     style="padding: 20px 0 0 0;">
 
     <div class="layui-form-item">
         <label class="layui-form-label" style="width: auto;">用户组</label>
         <div class="layui-input-inline">
             <select name="select-scences-type" id="select-scences-type1" disabled="disabled">
-                <option value="" disabled="disabled">默认</option>
+                <option value="">默认</option>
             </select>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label" style="width: auto;">所属部门</label>
         <div class="layui-input-inline">
-            <select name="select-scences-type2" id="select-scences-type2" disabled="disabled">
-                <option value="" >默认</option>
+            <select name="select-department" id="select-department" lay-filter="department">
+                <option value="">请选择部门</option>
             </select>
         </div>
     </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label" style="width: auto;">选择人员</label>
-        <div class="layui-input-inline">
-            <select name="select-scences-type" id="select-scences-type3">
+    <div class=" layui-form-item">
+            <label class="layui-form-label" style="width: auto;">选择人员</label>
+            <div class="layui-input-inline">
+                <select name="select-person" id="select-person">
 
-            </select>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="LAY-addbellman-submit" id="LAY-addbellman-submit" value="确认">
         </div>
     </div>
-    <div class="layui-form-item layui-hide">
-        <input type="button" lay-submit lay-filter="LAY-user-front-submit" id="LAY-user-front-submit" value="确认">
-    </div>
-</div>
+    <script src="/layui/layui.js"></script>
+    <script>
+        layui.config({
+            base: '/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'form'], function () {
+            var $ = layui.$
+                , form = layui.form;
 
-<script src="/layui/layui.js"></script>
-<script>
-    layui.config({
-        base: '/' //静态资源所在路径
-    }).extend({
-        index: 'lib/index' //主入口模块
-    }).use(['index', 'form'], function(){
-        var $ = layui.$
-            ,form = layui.form;
+            $(document).ready(function () {
+                //获取部门
+                $.ajax({
+                    type: 'post',
+                    contentType: 'application/json;charset=utf-8',
+                    url: layui.setter.serverURL + "/userInfo/queryDept",
+                    success: function (response) {
+                        var data = response.data;
+                        // $('#select-department').empty();
+                        var t;
+                        if (data == null) {
+                            //pass
+                        } else {
+                            $.each(data, function (index, element) {
+                                t = '<option value="' + element + '">' + element + '</option>';
+                                $('#select-department').append(t);
+                            })
+                        }
 
-        //去除空格
-        function trim(str,is_global="g") {
-            var result;
-            result = str.replace(/(^\s+)|(\s+$)/g,"");
-            if(is_global.toLowerCase()=="g") {
-                result = result.replace(/\s/g,"");
-            }
-            return result;
-        }
+                        form.render();
+                    }
+                })
+            });
 
-    })
-</script>
+            //监听部门
+            form.on('select(department)', function (data) {
+                // console.log(data.elem); //得到select原始DOM对象
+                // console.log(data.value); //得到被选中的值
+                // console.log(data.othis); //得到美化后的DOM对象
+                //获取员工
+                var filed = {};
+                filed.dept = data.value;
+                $.ajax({
+                    type: 'post',
+                    contentType: 'application/json;charset=utf-8',
+                    url: layui.setter.serverURL + "/userInfo/queryByDept",
+                    data: JSON.stringify(filed),
+                    success: function (response) {
+                        var data = response.data;
+                        //置空之前的员工
+                        $('#select-person').empty();
+                        var t;
+                        if (data == null) {
+                            //pass
+                        } else {
+                            $.each(data, function (index, element) {
+                                t = '<option value="' + element.id + '">' + element.name + '</option>';
+                                $('#select-person').append(t);
+                            })
+                        }
+
+                        form.render();
+                    }
+                })
+            });
+
+        })
+    </script>
 </body>
 </html>

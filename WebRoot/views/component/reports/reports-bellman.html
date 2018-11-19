@@ -51,24 +51,6 @@
             ,laydate = layui.laydate;
 
 
-        //监听搜索
-        form.on('submit(LAY-user-front-search)', function(data){
-            var field = {};
-            field.startTime = data.field.startTime;
-            field.endTime = data.field.endTime;
-            field.name = data.field.name;
-            field.username = data.field.username;
-
-            //执行重载
-            table.reload('table-bellman-list', {
-                where: field
-                ,page: {
-                    curr: 1 //重新从第 1 页开始
-                }
-            });
-
-        });
-
         table.render({
             type:'numbers'
             ,elem: '#table-bellman-list'
@@ -160,30 +142,21 @@
                     ,content: 'reports-addbellman.html'
                     ,maxmin: true
                     ,area: ['500px', '400px']
-                    ,btn: ['保存', '取消']
+                    ,btn: ['确认', '取消']
                     ,yes: function(index, layero){
                         var iframeWindow = window['layui-layer-iframe'+ index]
-                            ,submitID = 'LAY-user-front-submit'
+                            ,submitID = 'LAY-addbellman-submit'
                             ,submit   = layero.find('iframe').contents().find('#'+ submitID);
 
                         //监听提交
                         iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
                             var field = data.field; //获取提交的字段
-                            var password = field.password;
-                            var confirmPassword = field.confirmPassword;
-                            if( password.length < 6){
-                                layer.msg("密码长度不能小于6位");
-                                return ;
-                            }
-                            if( password != confirmPassword){
-                                layer.msg("两次输入密码不一致");
-                                return ;
-                            }
+                            console.log(field);
                             field.createdBy = layui.data(layui.setter.tableName).user.username;
                             $.ajax({
                                 type: 'POST',
                                 contentType: 'application/json;charset=utf-8',
-                                url:  layui.setter.serverURL +　'/calloutPeople/save',
+                                url:  layui.setter.serverURL +　'/calloutPeople/save333',
                                 data: JSON.stringify(field),
                                 dataType : "json",
                                 success: function(result) {
