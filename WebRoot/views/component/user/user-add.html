@@ -70,24 +70,17 @@
     layui.config({
         base: '/' //静态资源所在路径
     }).extend({
-        index: 'lib/index' //主入口模块
-    }).use(['index', 'form'], function(){
+        index: 'lib/index', //主入口模块
+        mypub:'public'
+    }).use(['index', 'form','mypub'], function(){
         var $ = layui.$
+        ,mypub = layui.mypub
         ,form = layui.form;
 
-        //去除空格
-        function trim(str,is_global="g") {
-            var result;
-            result = str.replace(/(^\s+)|(\s+$)/g,"");
-            if(is_global.toLowerCase()=="g") {
-                result = result.replace(/\s/g,"");
-            }
-            return result;
-        }
-        
+
         //搜索工号
         $("#peopleserchebtn").on('click',function () {
-            var peopleNovalue = trim($("#username").val());
+            var peopleNovalue = mypub.trim($("#username").val());
             if (peopleNovalue == '' || peopleNovalue==undefined){
                 layer.msg("请输入ERP账号");
             }else {

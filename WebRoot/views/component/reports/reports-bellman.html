@@ -111,7 +111,7 @@
                         dataType : "json",
                         success: function(result) {
                             if ('0' == result.code) {
-                                layer.msg("删除成功");
+                                layer.msg("移出成功");
                                 obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                                 layer.close(index);
                             } else {
