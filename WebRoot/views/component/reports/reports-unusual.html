@@ -105,7 +105,7 @@
 
             }
         });
-        
+
         // 全局ajax
         $.ajaxSetup({
             layerIndex:-1,
@@ -116,7 +116,7 @@
                 layer.close(this.layerIndex);
             }
         });
-        
+
 
         $(document).ready(function () {
             mypub.getDataList(form);
@@ -191,7 +191,7 @@
                     if ('0' == result.code) {
                         check_lock = result.data;
                     } else {
-
+                        layer.msg(result.msg)
                     }
                 },
                 error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
@@ -200,22 +200,22 @@
             });
             return check_lock;
         }
-        
-        
+
+
         //删除锁
         function dellock(lock_data){
             $.ajax({
                 async:false,
                 type: 'POST',
                 contentType: 'application/json;charset=utf-8',
-                url:  layui.setter.serverURL +　'calloutException/delLock',
+                url:  layui.setter.serverURL +　'/calloutException/delLock',
                 data: JSON.stringify(lock_data),
                 dataType : "json",
                 success: function(result) {
                     if ('0' == result.code) {
                         check_lock = result.data;
                     } else {
-
+                        layer.msg(result.msg)
                     }
                 },
                 error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
@@ -230,13 +230,11 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
             var tr       = obj.tr;    //获得当前行 tr 的DOM对象
             if(layEvent === 'handle'){ //处理
-                //do somehing
                 //加锁
                 var lock_data = new Object();
                 lock_data.id = data.id;
                 lock_data.handler = layui.data(layui.setter.tableName).user.name;
-                //result = lock(lock_data);
-                result = true;
+                result = lock(lock_data);
                 if (result){
                     layer.open({
                         type: 2
@@ -254,8 +252,6 @@
                                 var field = data1.field; //获取提交的字段
                                 field.id = data.id;
                                 field.handler = layui.data(layui.setter.tableName).user.name;
-                                console.log(field);
-                                // field.updatedBy = layui.data(layui.setter.tableName).user.username;
                                 $.ajax({
                                     type: 'POST',
                                     contentType: 'application/json;charset=utf-8',
@@ -275,22 +271,16 @@
                                         layer.msg("请求异常");
                                     }
                                 });
-
-                                //同步更新缓存对应的值
-                                obj.update({
-                                    name  : field.name
-                                    ,dept  : field.dept
-                                    ,mobile : field.mobile
-                                    ,email  : field.email
-                                    ,sex    : field.sex
-                                });
-                                layer.close(index); //关闭弹层
                             });
                             submit.trigger('click');
                         }
                         ,btn2: function(index, layero){
                             //解锁
-                            // dellock({id:data.id});
+                            dellock({id:data.id});
+                        }
+                        ,cancel: function(){
+                            //解锁
+                            dellock({id:data.id});
                         }
                     });
                 }else {

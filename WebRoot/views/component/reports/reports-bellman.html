@@ -145,6 +145,7 @@
                         iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
                             var field = new Object(); //获取提交的字段
                             field.userInfoId = data.field.userInfoId;
+                            field.updatedBy = layui.data(layui.setter.tableName).user.name;
                             console.log(field);
                             $.ajax({
                                 type: 'POST',
@@ -180,7 +181,7 @@
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
-        
+
         function formatData(data){
         	if (data == null || data == 'NULL' || data == 'null') {
         		return '';
