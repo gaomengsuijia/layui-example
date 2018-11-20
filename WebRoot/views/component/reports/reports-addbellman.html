@@ -55,22 +55,23 @@
             $(document).ready(function () {
                 //获取部门
                 $.ajax({
-                    type: 'post',
-                    contentType: 'application/json;charset=utf-8',
+        			type: 'POST',
+        			contentType: 'application/json;charset=utf-8',
+        			dataType : "json",
                     url: layui.setter.serverURL + "/userInfo/queryDept",
                     success: function (response) {
-                        var data = response.data;
-                        // $('#select-department').empty();
-                        var t;
-                        if (data == null) {
-                            //pass
-                        } else {
-                            $.each(data, function (index, element) {
-                                t = '<option value="' + element + '">' + element + '</option>';
-                                $('#select-department').append(t);
-                            })
-                        }
-
+                    	if ("0" == response.code){
+                    		 var data = response.data;
+                             var t;
+                             if (data != null){
+                            	 $.each(data, function (index, element) {
+                                     t = '<option value="' + element + '">' + element + '</option>';
+                                     $('#select-department').append(t);
+                                 })
+                             }
+                    	} else {
+                    		layer.msg(response.msg);
+                    	}
                         form.render();
                     }
                 })
@@ -78,27 +79,28 @@
 
             //监听部门
             form.on('select(department)', function (data) {
-                var filed = {};
+                var filed  = {};
                 filed.dept = data.value;
                 $.ajax({
                     type: 'post',
                     contentType: 'application/json;charset=utf-8',
+                	dataType : "json",
                     url: layui.setter.serverURL + "/userInfo/queryByDept",
                     data: JSON.stringify(filed),
                     success: function (response) {
-                        var data = response.data;
-                        //置空之前的员工
-                        $('#select-person').empty();
-                        var t;
-                        if (data == null) {
-                            //pass
-                        } else {
-                            $.each(data, function (index, element) {
-                                t = '<option value="' + element.id + '">' + element.name + '</option>';
-                                $('#select-person').append(t);
-                            })
-                        }
-
+                    	if ("0" == response.code){
+                    		var data = response.data;
+                    		var t;
+                            $('#select-person').empty();//置空之前的员工
+                            if (data != null) {
+                                $.each(data, function (index, element) {
+                                    t = '<option value="' + element.id + '">' + element.name + '</option>';
+                                    $('#select-person').append(t);
+                                })
+                            }
+                    	} else {
+                    		layer.msg(response.msg);
+                    	}
                         form.render();
                     }
                 })
