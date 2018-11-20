@@ -230,7 +230,7 @@
                 //加锁
                 var lock_data = new Object();
                 lock_data.id = data.id;
-                lock_data.handler = layui.data(layui.setter.tableName).user.name;
+                lock_data.handler = layui.data(layui.setter.tableName).user.username;
                 result = lock(lock_data);
                 if (result){
                     layer.open({
@@ -248,7 +248,7 @@
                             iframeWindow.layui.form.on('submit('+ submitID +')', function(data1){
                                 var field = data1.field; //获取提交的字段
                                 field.id = data.id;
-                                field.handler = layui.data(layui.setter.tableName).user.name;
+                                field.handler = layui.data(layui.setter.tableName).user.username;
                                 $.ajax({
                                     type: 'POST',
                                     contentType: 'application/json;charset=utf-8',
