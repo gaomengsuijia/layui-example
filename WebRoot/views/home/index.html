@@ -24,25 +24,30 @@
           </li>
         </ul>
         <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+          <li>
+          	<div style="display: none">
+          		<audio src="/audiojs/msg.mp3" preload="auto" id="music"/>
+          	 </div>
+          </li>
+          
           <li class="layui-nav-item layui-hide-xs" lay-unselect>
             <a href="javascript:;" layadmin-event="fullscreen">
               <i class="layui-icon layui-icon-screen-full"></i>
             </a>
           </li>
-          <li class="layui-nav-item" lay-unselect>
+          
+          <li class="layui-nav-item" lay-unselect>    
             <a href="javascript:;">
               <cite id="cite_login_name"></cite>
             </a>
-
             <dl class="layui-nav-child">
               <!--
-              <dd><a lay-href="set/user/info.html">基本资料</a></dd>
-              <dd><a lay-href="set/user/password.html">修改密码</a></dd>
-              <hr>
+              	<dd><a lay-href="set/user/info.html">基本资料</a></dd>
+              	<dd><a lay-href="set/user/password.html">修改密码</a></dd>
+              	<hr>
                -->
               <dd id="btn-logout" style="text-align: center;"><a>退出</a></dd>
             </dl>
-
           </li>
         </ul>
       </div>
@@ -181,6 +186,7 @@
   </div>
 
 <script src="/layui/layui.js"></script>
+<script src="/audiojs/audio.min.js"></script>
 <script>
 	layui.config({
 		base : '/' //静态资源所在路径
@@ -188,32 +194,70 @@
 		index : 'lib/index' //主入口模块
 	}).use('index', function() {
 	    var $   = layui.$
-	    ,setter = layui.setter;
+	    ,setter = layui.setter
+	    ,audio  = null
+	    ,heartBeatId =  "";
+
 
 	    // 验证是否登录
 	    if (layui.data(layui.setter.tableName).user == null){
 	    	location.href = '/views/login.html';
 	    } else {
 	    	$("#cite_login_name").html(layui.data(layui.setter.tableName).user.name);
+	    	
+	    	// 若在响铃人员组,则提示
+	    	var inGroup = layui.data(layui.setter.tableName).user.inGroup;
+	    	if (inGroup) {
+		    	// 初始化audio
+		    	audio = document.getElementById('music');
+		    	audio.pause();
+		    	
+		    	// 启动轮训任务
+		    	setTimeout(function () {
+		    		startHeartBeat();
+		    	}, 1000)
+	    	}
 	    }
 
-	    // 全局ajax
-	    $.ajaxSetup({
-	        layerIndex:-1,
-	        beforeSend: function () {
-	            this.layerIndex = layer.msg('加载中', {icon: 16,shade: 0.01});
-	        },
-	        complete: function () {
-	            layer.close(this.layerIndex);
-	        }
-	    });
 
 	    $(document).on('click','#btn-logout',function(){
 	    	layui.data(setter.tableName,null);
 	    	location.href = '/views/login.html';
 	    });
+	    
+	    audiojs.events.ready(function() {
+	    	var as  = audiojs.createAll();
+	   });
+	    
+	   function startHeartBeat(){
+	    	heartBeatId = setInterval(function () {
+	           sendHeartBeatIQ();
+	        }, 5 * 1000);	
+	   };
 
-
+	   function sendHeartBeatIQ(){ 
+	    	$.ajax({
+    			type: 'POST',
+    			contentType: 'application/json;charset=utf-8',
+    			url:  layui.setter.serverURL +　'/calloutException/countException',
+    			data: JSON.stringify("{}"),
+    			dataType : "json",
+    			success: function(result) {
+    				if ('0' == result.code) {
+    					var count = result.data;
+    					if (count > 0){
+    						 audio.play();
+    					}
+    				} 
+    			}
+    	   });
+	   }
+	   
+	   function stopHeartBeat(){
+	    	if(heartBeatId){
+	    		clearInterval(heartBeatId);
+	    	}
+	    };
 	});
 </script>
 </body>
