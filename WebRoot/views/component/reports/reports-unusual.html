@@ -93,6 +93,7 @@
             ,table   = layui.table
             ,element = layui.element
             ,mypub = layui.mypub
+            ,check_lock = false//处理异常加锁
             ,laydate = layui.laydate;
 
         //执行一个laydate实例
@@ -176,6 +177,50 @@
         });
 
 
+        //加锁
+        function lock(lock_data){
+            $.ajax({
+                async:false,
+                type: 'POST',
+                contentType: 'application/json;charset=utf-8',
+                url:  layui.setter.serverURL +　'/calloutException/lock',
+                data: JSON.stringify(lock_data),
+                dataType : "json",
+                success: function(result) {
+                    if ('0' == result.code) {
+                        check_lock = result.data;
+                    } else {
+
+                    }
+                },
+                error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
+                    layer.msg("请求异常");
+                }
+            });
+            return check_lock;
+        }
+        //删除锁
+        function dellock(lock_data){
+            $.ajax({
+                async:false,
+                type: 'POST',
+                contentType: 'application/json;charset=utf-8',
+                url:  layui.setter.serverURL +　'calloutException/delLock',
+                data: JSON.stringify(lock_data),
+                dataType : "json",
+                success: function(result) {
+                    if ('0' == result.code) {
+                        check_lock = result.data;
+                    } else {
+
+                    }
+                },
+                error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
+                    layer.msg("请求异常");
+                }
+            });
+        }
+
         //监听工具条
         table.on('tool(table-reportsunusual-list)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
             var data     = obj.data;  //获得当前行数据
@@ -183,59 +228,72 @@
             var tr       = obj.tr;    //获得当前行 tr 的DOM对象
             if(layEvent === 'handle'){ //处理
                 //do somehing
-                //判断锁
-
-                layer.open({
-                    type: 2
-                    ,title: '处理确认'
-                    ,content: 'reports-handleunusual.html'
-                    ,maxmin: true
-                    ,area: ['500px', '500px']
-                    ,btn: ['确定', '取消']
-                    ,yes: function(index, layero){
-                        var iframeWindow = window['layui-layer-iframe'+ index]
-                            ,submitID = 'LAY-handleunusual-submit'
-                            ,submit   = layero.find('iframe').contents().find('#'+ submitID);
-                        //监听提交
-                        iframeWindow.layui.form.on('submit('+ submitID +')', function(data1){
-                            var field = data1.field; //获取提交的字段
-                            field.id = data.id;
-                            field.handler = layui.data(layui.setter.tableName).user.name;
-                            console.log(field);
-                            // field.updatedBy = layui.data(layui.setter.tableName).user.username;
-                            $.ajax({
-                                type: 'POST',
-                                contentType: 'application/json;charset=utf-8',
-                                url:  layui.setter.serverURL +　'/calloutException/updateStatus',
-                                data: JSON.stringify(field),
-                                dataType : "json",
-                                success: function(result) {
-                                    if ('0' == result.code) {
-                                        layer.msg("修改成功")
-                                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                                        layer.close(index);
-                                    } else {
-                                        layer.msg(result.msg);
+                //加锁
+                var lock_data = new Object();
+                lock_data.id = data.id;
+                lock_data.handler = layui.data(layui.setter.tableName).user.name;
+                //result = lock(lock_data);
+                result = true;
+                if (result){
+                    layer.open({
+                        type: 2
+                        ,title: '处理确认'
+                        ,content: 'reports-handleunusual.html'
+                        ,maxmin: true
+                        ,area: ['500px', '500px']
+                        ,btn: ['确定', '取消']
+                        ,yes: function(index, layero){
+                            var iframeWindow = window['layui-layer-iframe'+ index]
+                                ,submitID = 'LAY-handleunusual-submit'
+                                ,submit   = layero.find('iframe').contents().find('#'+ submitID);
+                            //监听提交
+                            iframeWindow.layui.form.on('submit('+ submitID +')', function(data1){
+                                var field = data1.field; //获取提交的字段
+                                field.id = data.id;
+                                field.handler = layui.data(layui.setter.tableName).user.name;
+                                console.log(field);
+                                // field.updatedBy = layui.data(layui.setter.tableName).user.username;
+                                $.ajax({
+                                    type: 'POST',
+                                    contentType: 'application/json;charset=utf-8',
+                                    url:  layui.setter.serverURL +　'/calloutException/updateStatus',
+                                    data: JSON.stringify(field),
+                                    dataType : "json",
+                                    success: function(result) {
+                                        if ('0' == result.code) {
+                                            layer.msg("修改成功")
+                                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                            layer.close(index);
+                                        } else {
+                                            layer.msg(result.msg);
+                                        }
+                                    },
+                                    error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
+                                        layer.msg("请求异常");
                                     }
-                                },
-                                error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
-                                    layer.msg("请求异常");
-                                }
-                            });
+                                });
 
-                            //同步更新缓存对应的值
-                            obj.update({
-                                name  : field.name
-                                ,dept  : field.dept
-                                ,mobile : field.mobile
-                                ,email  : field.email
-                                ,sex    : field.sex
+                                //同步更新缓存对应的值
+                                obj.update({
+                                    name  : field.name
+                                    ,dept  : field.dept
+                                    ,mobile : field.mobile
+                                    ,email  : field.email
+                                    ,sex    : field.sex
+                                });
+                                layer.close(index); //关闭弹层
                             });
-                            layer.close(index); //关闭弹层
-                        });
-                        submit.trigger('click');
-                    }
-                });
+                            submit.trigger('click');
+                        }
+                        ,btn2: function(index, layero){
+                            //解锁
+                            // dellock({id:data.id});
+                        }
+                    });
+                }else {
+                    layer.msg("该异常数据正在被别人处理");
+                }
+
 
             } else if(layEvent === 'del'){
 
