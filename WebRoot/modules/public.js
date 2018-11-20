@@ -9,6 +9,7 @@ layui.define(['layer'], function(exports) {
         getDataList:function (form) {
             $.ajax({
                 type:'post',
+                dataType : "json",
                 url: layui.setter.serverURL + "/calloutScene/list",
                 contentType: 'application/json;charset=utf-8',
                 success:function(response){
