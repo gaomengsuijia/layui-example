@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>用户管理</title>
+    <title>添加响铃人员</title>
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Cache-control" content="no-cache">
@@ -18,20 +18,13 @@
 <div class="layui-fluid userseacher">
     <div class="layui-card">
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
-
         </div>
-
         <div class="layui-card-body">
             <div style="padding-bottom: 10px;">
                 <!--<button class="layui-btn layuiadmin-btn-useradmin" data-type="batchdel">删除</button>-->
                 <button class="layui-btn layuiadmin-btn-addbellman" style="background-color: #4D317C" data-type="add">添加</button>
             </div>
-
             <table id="table-bellman-list" lay-filter="table-bellman-list"></table>
-
-            <script type="text/html" id="imgTpl">
-                <img style="display: inline-block; width: 50%; height: 100%;" src= {{ d.avatar }}>
-            </script>
             <script type="text/html" id="table-useradmin-webuser">
                 <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>移出</a>
             </script>
@@ -74,9 +67,9 @@
                 {field:'id', title: '序号', align: 'center',width: 60}
                 ,{field:'dept',   title: '所属部门', align: 'center'}
                 ,{field:'name', title: '员工姓名', align: 'center'}
-                ,{field:'phone',   title: '联系方式', align: 'center'}
+                ,{field:'phone',   title: '联系方式', align: 'center', templet: function(data) {return formatData(data.phone);} }
                 ,{field:'updateByName',   title: '操作人', align: 'center'}
-                ,{field:'updateByPhone',   title: '操作人联系方式', align: 'center'}
+                ,{field:'updateByPhone',   title: '操作人联系方式', align: 'center', templet: function(data) {return formatData(data.updateByPhone);}}
                 ,{fixed: 'right', width:150, align:'center', toolbar: '#table-useradmin-webuser',title:"操作"}
 
             ]]
@@ -145,13 +138,12 @@
                     ,btn: ['确认', '取消']
                     ,yes: function(index, layero){
                         var iframeWindow = window['layui-layer-iframe'+ index]
-                            ,submitID = 'LAY-addbellman-submit'
-                            ,submit   = layero.find('iframe').contents().find('#'+ submitID);
+                        ,submitID = 'LAY-addbellman-submit'
+                        ,submit   = layero.find('iframe').contents().find('#'+ submitID);
 
                         //监听提交
                         iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
                             var field = new Object(); //获取提交的字段
-                            // field.createdBy = layui.data(layui.setter.tableName).user.username;
                             field.userInfoId = data.field.userInfoId;
                             console.log(field);
                             $.ajax({
@@ -188,6 +180,13 @@
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
+        
+        function formatData(data){
+        	if (data == null || data == 'NULL' || data == 'null') {
+        		return '';
+        	}
+        	return data;
+        }
     });
 </script>
 </body>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>用户管理</title>
+    <title>历史异常</title>
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Cache-control" content="no-cache">
@@ -18,7 +18,7 @@
 <div class="layui-fluid reportunusualseacher">
     <div class="layui-card">
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
-            <ul class="layui-row layui-col-space10">
+            <ul class="layui-row layui-col-space10"  style="margin-bottom: 10px">
                 <li class="layui-col-md1">
                     <a lay-href="/views/component/reports/reports-bellman.html" class="layui-btn" style="background-color: #4D317C;">响铃人员设置</a>
                 </li>
@@ -54,10 +54,7 @@
                     <div class="layui-input-inline">
                         <input type="text" name="endTime" class="layui-input" id="callEndTime" READONLY>
                     </div>
-
                 </div>
-
-
                 <div class="layui-inline">
                     <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search" style="background-color: #4D317C; margin-left: 5px;">
                         <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
@@ -65,14 +62,8 @@
                 </div>
             </div>
         </div>
-
         <div class="layui-card-body">
-
             <table id="table-reportsunusual-list" lay-filter="table-reportsunusual-list"></table>
-
-            <script type="text/html" id="imgTpl">
-                <img style="display: inline-block; width: 50%; height: 100%;" src= {{ d.avatar }}>
-            </script>
         </div>
     </div>
 </div>
@@ -153,9 +144,8 @@
                     ,"data" : response.data.rows
                 };
             }
-            ,cellMinWidth: 80
             ,cols: [[
-                {field:'calloutTime', title: '时间', align: 'center'}
+                {field:'calloutTime', title: '时间', align: 'center',width:200,}
                 ,{field:'calloutType', title: '外呼场景', align: 'center'}
                 ,{field:'calloutName',   title: '被叫姓名', align: 'center'}
                 ,{field:'calloutPhone',   title: '被叫号码', align: 'center'}
@@ -163,7 +153,7 @@
                 ,{field:'leaderPhone',   title: '上级号码', align: 'center'}
                 ,{field:'handler',   title: '处理人', align: 'center'}
                 ,{field:'handleStatus',   title: '处理状态', align: 'center',templet:'#handlestatus'}
-                ,{field:'handleTime',   title: '处理时间', align: 'center'}
+                ,{field:'handleTime',   title: '处理时间', align: 'center',width:200,}
 
             ]]
             ,text: {
