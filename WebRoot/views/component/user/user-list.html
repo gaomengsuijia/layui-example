@@ -60,11 +60,8 @@
           <button class="layui-btn layuiadmin-btn-useradmin" style="background-color: #4D317C" data-type="add">添加</button>
         </div>
 
-        <table id="table-user-list" lay-filter="table-user-list"></table>
+        <table id="table-user-info" lay-filter="table-user-info"></table>
 
-        <script type="text/html" id="imgTpl">
-          <img style="display: inline-block; width: 50%; height: 100%;" src= {{ d.avatar }}>
-        </script>
         <script type="text/html" id="table-useradmin-webuser">
           <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
           <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
@@ -121,9 +118,9 @@ layui.config({
 
     });
 
-    table.render({
+    var t = table.render({
           type:'numbers'
-	      ,elem: '#table-user-list'
+	      ,elem: '#table-user-info'
 	      ,contentType: 'application/json;charset=utf-8'
 		  ,url:  layui.setter.serverURL +　'/userInfo/selectList'
         ,request: {
@@ -154,7 +151,7 @@ layui.config({
 	       none: '暂无相关数据'
 	   }
 	  ,page: {
-          elem  : 'table-user-list'
+          elem  : 'table-user-info'
          ,groups: 5
          ,limit : 10
          ,theme: '#4D317C'
@@ -163,7 +160,7 @@ layui.config({
 
 
     //监听工具条
-    table.on('tool(table-user-list)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+    table.on('tool(table-user-info)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
         var data     = obj.data;  //获得当前行数据
         var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
         var tr       = obj.tr;    //获得当前行 tr 的DOM对象
@@ -264,23 +261,7 @@ layui.config({
     //事件
     var active = {
       batchdel: function(){
-        var checkStatus = table.checkStatus('table-user-list')
-        ,checkData = checkStatus.data; //得到选中的数据
 
-        if(checkData.length === 0){
-          return layer.msg('请选择数据');
-        }
-
-        layer.prompt({
-          formType: 1
-          ,title: '敏感操作，请验证口令'
-        }, function(value, index){
-            layer.close(index);
-            layer.confirm('确定删除吗？', function(index) {
-            table.reload('table-user-list');
-            layer.msg('已删除');
-          });
-        });
       }
       ,add: function(){
         layer.open({
@@ -319,7 +300,7 @@ layui.config({
                       if ('0' == result.code) {
                           layer.msg("新增成功")
                           layer.close(index); //关闭弹层
-                          table.reload('table-user-list'); //数据刷新
+                          table.reload('table-user-info'); //数据刷新
                       } else {
                           layer.msg(result.msg);
                       }

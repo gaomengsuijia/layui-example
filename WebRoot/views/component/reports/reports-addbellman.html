@@ -65,7 +65,7 @@
                              var t;
                              if (data != null){
                             	 $.each(data, function (index, element) {
-                                     t = '<option value="' + element + '">' + element + '</option>';
+                                     t = '<option value="' + element.id + '">' + element + '</option>';
                                      $('#select-department').append(t);
                                  })
                              }
@@ -94,7 +94,7 @@
                             $('#select-person').empty();//置空之前的员工
                             if (data != null) {
                                 $.each(data, function (index, element) {
-                                    t = '<option value="' + element.id + '">' + element.name + '</option>';
+                                    t = '<option value="' + element.id + '">' + element.realName + '</option>';
                                     $('#select-person').append(t);
                                 })
                             }
