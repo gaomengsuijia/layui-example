@@ -10,17 +10,17 @@ layui.define(['layer'], function(exports) {
             $.ajax({
                 type:'post',
                 url: layui.setter.serverURL + "/calloutScene/list",
+                contentType: 'application/json;charset=utf-8',
                 success:function(response){
-                    var data=response.data;
-                    // $('#sceneId').empty();
-                    var t;
-                    if(data==null){
-                        //pass
-                    }else {
-                        $.each(data,function (index,element) {
-                            t = '<option value="' +element.id +  '">' +element.calloutType +  '</option>';
-                            $('#sceneId').append(t);
-                        })
+                    if ("0" == response.code){
+                        var data=response.data;
+                        var t;
+                        if (data != null){
+                            $.each(data,function (index,element) {
+                                t = '<option value="' +element.id +  '">' +element.calloutType +  '</option>';
+                                $('#sceneId').append(t);
+                            })
+                        }
                     }
 
                     form.render();
