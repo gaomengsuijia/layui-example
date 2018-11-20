@@ -189,7 +189,7 @@
                 dataType : "json",
                 success: function(result) {
                     if ('0' == result.code) {
-                        check_lock = result.data;
+                        check_lock = true;
                     } else {
                         layer.msg(result.msg)
                     }
@@ -212,11 +212,8 @@
                 data: JSON.stringify(lock_data),
                 dataType : "json",
                 success: function(result) {
-                    if ('0' == result.code) {
-                        check_lock = result.data;
-                    } else {
-                        layer.msg(result.msg)
-                    }
+                    //pass
+                    check_lock = false;
                 },
                 error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
                     layer.msg("请求异常");
