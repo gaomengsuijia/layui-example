@@ -29,14 +29,14 @@
           		<audio src="/audiojs/msg.mp3" preload="auto" id="music"/>
           	 </div>
           </li>
-          
+
           <li class="layui-nav-item layui-hide-xs" lay-unselect>
             <a href="javascript:;" layadmin-event="fullscreen">
               <i class="layui-icon layui-icon-screen-full"></i>
             </a>
           </li>
-          
-          <li class="layui-nav-item" lay-unselect>    
+
+          <li class="layui-nav-item" lay-unselect>
             <a href="javascript:;">
               <cite id="cite_login_name"></cite>
             </a>
@@ -87,6 +87,9 @@
                 </dd>
                 <dd data-name="scenes-car">
                   	<a lay-href="/views/component/scenes/scenes-car.html">专车提前派送</a>
+                </dd>
+                <dd data-name="scenes-car">
+                  <a lay-href="/views/component/scenes/scenes-waitinfosend.html">等市场通知派送</a>
                 </dd>
                 <!--
                 <dd data-name="scenes-pdd">
@@ -204,14 +207,14 @@
 	    	location.href = '/views/login.html';
 	    } else {
 	    	$("#cite_login_name").html(layui.data(layui.setter.tableName).user.name);
-	    	
+
 	    	// 若在响铃人员组,则提示
 	    	var inGroup = layui.data(layui.setter.tableName).user.inGroup;
 	    	if (inGroup) {
 		    	// 初始化audio
 		    	audio = document.getElementById('music');
 		    	audio.pause();
-		    	
+
 		    	// 启动轮训任务
 		    	setTimeout(function () {
 		    		startHeartBeat();
@@ -224,18 +227,18 @@
 	    	layui.data(setter.tableName,null);
 	    	location.href = '/views/login.html';
 	    });
-	    
+
 	    audiojs.events.ready(function() {
 	    	var as  = audiojs.createAll();
 	   });
-	    
+
 	   function startHeartBeat(){
 	    	heartBeatId = setInterval(function () {
 	           sendHeartBeatIQ();
-	        }, 5 * 1000);	
+	        }, 5 * 1000);
 	   };
 
-	   function sendHeartBeatIQ(){ 
+	   function sendHeartBeatIQ(){
 	    	$.ajax({
     			type: 'POST',
     			contentType: 'application/json;charset=utf-8',
@@ -248,11 +251,11 @@
     					if (count > 0){
     						 audio.play();
     					}
-    				} 
+    				}
     			}
     	   });
 	   }
-	   
+
 	   function stopHeartBeat(){
 	    	if(heartBeatId){
 	    		clearInterval(heartBeatId);
