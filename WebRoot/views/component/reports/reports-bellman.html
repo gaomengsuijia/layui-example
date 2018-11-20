@@ -74,9 +74,9 @@
                 {field:'id', title: '序号', align: 'center',width: 60}
                 ,{field:'dept',   title: '所属部门', align: 'center'}
                 ,{field:'name', title: '员工姓名', align: 'center'}
-                ,{field:'username',   title: '联系方式', align: 'center'}
-                ,{field:'createdBy',   title: '操作人', align: 'center'}
-                ,{field:'creationDate',   title: '操作人联系方式', align: 'center'}
+                ,{field:'phone',   title: '联系方式', align: 'center'}
+                ,{field:'updateByName',   title: '操作人', align: 'center'}
+                ,{field:'updateByPhone',   title: '操作人联系方式', align: 'center'}
                 ,{fixed: 'right', width:150, align:'center', toolbar: '#table-useradmin-webuser',title:"操作"}
 
             ]]
@@ -107,7 +107,7 @@
                         type: 'POST',
                         contentType: 'application/json;charset=utf-8',
                         url:  layui.setter.serverURL +　'/calloutPeople/delete',
-                        data: JSON.stringify({username:data.username}),
+                        data: JSON.stringify({id:data.id}),
                         dataType : "json",
                         success: function(result) {
                             if ('0' == result.code) {
@@ -150,20 +150,21 @@
 
                         //监听提交
                         iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
-                            var field = data.field; //获取提交的字段
+                            var field = new Object(); //获取提交的字段
+                            // field.createdBy = layui.data(layui.setter.tableName).user.username;
+                            field.userInfoId = data.field.userInfoId;
                             console.log(field);
-                            field.createdBy = layui.data(layui.setter.tableName).user.username;
                             $.ajax({
                                 type: 'POST',
                                 contentType: 'application/json;charset=utf-8',
-                                url:  layui.setter.serverURL +　'/calloutPeople/save333',
+                                url:  layui.setter.serverURL +　'/calloutPeople/save',
                                 data: JSON.stringify(field),
                                 dataType : "json",
                                 success: function(result) {
                                     if ('0' == result.code) {
                                         layer.msg("新增成功")
                                         layer.close(index); //关闭弹层
-                                        table.reload('table-user-list'); //数据刷新
+                                        table.reload('table-bellman-list'); //数据刷新
                                     } else {
                                         layer.msg(result.msg);
                                     }
