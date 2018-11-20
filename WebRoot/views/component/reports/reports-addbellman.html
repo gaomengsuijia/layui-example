@@ -49,11 +49,11 @@
         }).extend({
             index: 'lib/index' //主入口模块
         }).use(['index', 'form'], function () {
-            var $ = layui.$
-                , form = layui.form;
+            var $  = layui.$
+            , form = layui.form;
 
+            // 绑定部门数据
             $(document).ready(function () {
-                //获取部门
                 $.ajax({
         			type: 'POST',
         			contentType: 'application/json;charset=utf-8',
@@ -61,18 +61,17 @@
                     url: layui.setter.serverURL + "/userInfo/queryDept",
                     success: function (response) {
                     	if ("0" == response.code){
-                    		 var data = response.data;
-                             var t;
+                    		 var data = response.data;                
                              if (data != null){
                             	 $.each(data, function (index, element) {
-                                     t = '<option value="' + element + '">' + element + '</option>';
+                            		 var t = '<option value="' + element + '">' + element + '</option>';
                                      $('#select-department').append(t);
                                  })
                              }
+                             form.render();
                     	} else {
                     		layer.msg(response.msg);
                     	}
-                        form.render();
                     }
                 })
             });
@@ -90,11 +89,10 @@
                     success: function (response) {
                     	if ("0" == response.code){
                     		var data = response.data;
-                    		var t;
                             $('#select-person').empty();//置空之前的员工
                             if (data != null) {
                                 $.each(data, function (index, element) {
-                                    t = '<option value="' + element.id + '">' + element.realName + '</option>';
+                                	var t = '<option value="' + element.id + '">' + element.name + '</option>';
                                     $('#select-person').append(t);
                                 })
                             }
